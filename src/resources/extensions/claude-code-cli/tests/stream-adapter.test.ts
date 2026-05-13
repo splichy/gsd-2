@@ -54,6 +54,8 @@ const WORKFLOW_MCP_ENV_KEYS = [
 	"GSD_WORKFLOW_MCP_ARGS",
 	"GSD_WORKFLOW_MCP_ENV",
 	"GSD_WORKFLOW_MCP_CWD",
+	"GSD_PROJECT_ROOT",
+	"GSD_WORKFLOW_PROJECT_ROOT",
 ] as const;
 
 type WorkflowMcpEnvKey = (typeof WORKFLOW_MCP_ENV_KEYS)[number];
@@ -64,6 +66,9 @@ function setWorkflowMcpEnv(
 	const prev: Partial<Record<WorkflowMcpEnvKey, string | undefined>> = {};
 	for (const key of WORKFLOW_MCP_ENV_KEYS) {
 		prev[key] = process.env[key];
+		// Clear all managed keys so tests run in a clean env state.
+		// Keys present in `values` are set to the desired test value below.
+		delete process.env[key];
 	}
 	for (const [key, value] of Object.entries(values)) {
 		process.env[key] = value;

@@ -28,6 +28,8 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { PartialMessageBuilder, ZERO_USAGE, mapUsage } from "./partial-builder.js";
 import { buildWorkflowMcpServers } from "../gsd/workflow-mcp.js";
+import { loadProjectGSDPreferences } from "../gsd/preferences.js";
+import { discoverMcpServerNames, computeMcpDisallowedTools } from "../gsd/mcp-filter.js";
 import { showInterviewRound, type Question, type RoundResult } from "../shared/tui.js";
 import type {
 	SDKAssistantMessage,
@@ -1317,13 +1319,29 @@ export function buildSdkOptions(
 	const sdkCwd = typeof cwd === "string" && cwd.trim().length > 0 ? cwd : process.cwd();
 	const mcpServers = buildWorkflowMcpServers(sdkCwd);
 	const permissionMode = overrides?.permissionMode ?? "bypassPermissions";
+
+	const preferences = loadProjectGSDPreferences(sdkCwd);
+	const mcpConfig = preferences?.claude_code_mcp;
+	const workflowServerName = mcpServers ? Object.keys(mcpServers)[0] : undefined;
+
+	let filteredMcpServers = mcpServers;
+	let extraDisallowedTools: string[] = [];
+
+	if (mcpConfig) {
+		const discovered = discoverMcpServerNames(sdkCwd);
+		extraDisallowedTools = computeMcpDisallowedTools(modelId, mcpConfig, discovered, workflowServerName);
+		if (workflowServerName && extraDisallowedTools.includes(`mcp__${workflowServerName}__*`)) {
+			filteredMcpServers = undefined;
+		}
+	}
+
 	// Globally unblock the tools GSD expects Claude Code to run. When the
 	// workflow MCP server is available, prefer its `ask_user_questions` tool over
 	// Claude Code's native `AskUserQuestion`; the MCP path carries stable IDs and
 	// routes responses through the GSD elicitation bridge.
 	// Opt back into gated mode with GSD_CLAUDE_CODE_PERMISSION_MODE=acceptEdits.
-	const workflowMcpTools = mcpServers ? Object.keys(mcpServers).map((serverName) => `mcp__${serverName}__*`) : [];
-	const disallowedTools: string[] = workflowMcpTools.length > 0 ? ["AskUserQuestion"] : [];
+	const workflowMcpTools = filteredMcpServers ? Object.keys(filteredMcpServers).map((serverName) => `mcp__${serverName}__*`) : [];
+	const disallowedTools: string[] = [...(workflowMcpTools.length > 0 ? ["AskUserQuestion"] : []), ...extraDisallowedTools];
 	const allowedTools = [
 		"Read",
 		"Write",
@@ -1363,7 +1381,7 @@ export function buildSdkOptions(
 		systemPrompt: { type: "preset", preset: "claude_code" },
 		disallowedTools,
 		...(allowedTools.length > 0 ? { allowedTools } : {}),
-		...(mcpServers ? { mcpServers } : {}),
+		...(filteredMcpServers ? { mcpServers: filteredMcpServers } : {}),
 		betas: (modelId.includes("sonnet") || modelId.includes("opus-4-7") || modelId.includes("opus-4.7")) ? ["context-1m-2025-08-07"] : [],
 		...(thinkingConfig ?? {}),
 		...(effort ? { effort } : {}),
