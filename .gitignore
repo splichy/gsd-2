@@ -1,25 +1,9 @@
 
-# ── Compiled test output ──
-dist-test/
-
-# ── Compiled output in src/ (should only contain .ts source) ──
-src/**/*.js
-src/**/*.js.map
-src/**/*.d.ts
-src/**/*.d.ts.map
-!src/**/*.test.js
-
-# ── Repowise index (local machine-generated cache) ──
-.repowise/
-repowise.db
-repowise.db-*
-
 # ── GSD project state (development-only, lives in worktree branches) ──
 package-lock.json
 .claude/
 RELEASE-GUIDE.md
 *.tgz
-*.tsbuildinfo
 .DS_Store
 Thumbs.db
 *.swp
@@ -54,9 +38,6 @@ tmp/
 packages/*/dist/
 packages/*/node_modules/
 
-# ── Scratch/WIP files ──
-preflight-script.ts
-
 # ── GSD baseline (auto-generated) ──
 dist/
 !/pkg/dist/modes/
@@ -70,7 +51,6 @@ TODOS.md
 .planning/
 .audits/
 docs/coherence-audit/
-.plans/
 
 # ── GSD project state (per-worktree, never committed) ──
 .gsd/
@@ -81,9 +61,3 @@ bun.lock
 
 # ── GSD baseline (auto-generated) ──
 .gsd
-
-# ── GSD baseline (auto-generated) ──
-.gsd-id
-
-# ── GSD baseline (auto-generated) ──
-.mcp.json
