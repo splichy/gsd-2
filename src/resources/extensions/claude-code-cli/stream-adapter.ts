@@ -1321,7 +1321,7 @@ export function buildSdkOptions(
 	const permissionMode = overrides?.permissionMode ?? "bypassPermissions";
 
 	const preferences = loadProjectGSDPreferences(sdkCwd);
-	const mcpConfig = preferences?.claude_code_mcp;
+	const mcpConfig = preferences?.preferences.claude_code_mcp;
 	const workflowServerName = mcpServers ? Object.keys(mcpServers)[0] : undefined;
 
 	let filteredMcpServers = mcpServers;

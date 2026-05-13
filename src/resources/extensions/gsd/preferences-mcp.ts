@@ -13,7 +13,9 @@ export function resolveModelMcpConfig(
 ): ClaudeCodeMcpPerModelEntry | undefined {
   let bestKey: string | undefined;
 
-  for (const key of Object.keys(config.per_model)) {
+  const perModel = config.per_model ?? {};
+
+  for (const key of Object.keys(perModel)) {
     if (modelId.startsWith(key)) {
       if (bestKey === undefined || key.length > bestKey.length) {
         bestKey = key;
@@ -21,5 +23,5 @@ export function resolveModelMcpConfig(
     }
   }
 
-  return bestKey !== undefined ? config.per_model[bestKey] : undefined;
+  return bestKey !== undefined ? perModel[bestKey] : undefined;
 }

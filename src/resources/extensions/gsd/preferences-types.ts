@@ -329,7 +329,7 @@ export interface ClaudeCodeMcpPerModelEntry {
 
 /** Top-level claude_code_mcp preference: maps model-ID prefixes to server filter lists. */
 export interface ClaudeCodeMcpConfig {
-  per_model: Record<string, ClaudeCodeMcpPerModelEntry>;
+  per_model?: Record<string, ClaudeCodeMcpPerModelEntry>;
 }
 
 export interface GSDPreferences {
