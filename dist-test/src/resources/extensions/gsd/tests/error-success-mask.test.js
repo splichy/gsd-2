@@ -1,0 +1,23 @@
+import { describe, test } from "node:test";
+import assert from "node:assert/strict";
+import { resolveAgentEndErrorDisplay } from "../bootstrap/agent-end-recovery.js";
+describe("error-success mask detection (#3664)", () => {
+  test("falls back to assistant text when errorMessage is uninformative", () => {
+    assert.equal(
+      resolveAgentEndErrorDisplay("success", [
+        { type: "tool_use", name: "noop" },
+        { type: "text", text: "provider failed with a useful message" }
+      ]),
+      "provider failed with a useful message"
+    );
+  });
+  test("keeps informative raw error messages", () => {
+    assert.equal(
+      resolveAgentEndErrorDisplay("rate limit exceeded", [
+        { type: "text", text: "prose should not replace useful raw error" }
+      ]),
+      "rate limit exceeded"
+    );
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9lcnJvci1zdWNjZXNzLW1hc2sudGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiLyoqXG4gKiBlcnJvci1zdWNjZXNzLW1hc2sudGVzdC50cyBcdTIwMTQgIzM2NjRcbiAqXG4gKiBWZXJpZnkgdGhhdCB0aGUgYWdlbnQtZW5kLXJlY292ZXJ5IGVycm9yIGhhbmRsZXIgZGV0ZWN0cyB3aGVuIGVycm9yTWVzc2FnZVxuICogaXMgdW5pbmZvcm1hdGl2ZSAoZS5nLiBcInN1Y2Nlc3NcIiwgXCJva1wiLCBcInVua25vd25cIikgYW5kIGZhbGxzIGJhY2sgdG9cbiAqIGV4dHJhY3RpbmcgdGhlIHJlYWwgZXJyb3IgZnJvbSB0aGUgYXNzaXN0YW50IG1lc3NhZ2UgdGV4dCBjb250ZW50LlxuICovXG5cbmltcG9ydCB7IGRlc2NyaWJlLCB0ZXN0IH0gZnJvbSBcIm5vZGU6dGVzdFwiO1xuaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5pbXBvcnQgeyByZXNvbHZlQWdlbnRFbmRFcnJvckRpc3BsYXkgfSBmcm9tIFwiLi4vYm9vdHN0cmFwL2FnZW50LWVuZC1yZWNvdmVyeS50c1wiO1xuXG5kZXNjcmliZShcImVycm9yLXN1Y2Nlc3MgbWFzayBkZXRlY3Rpb24gKCMzNjY0KVwiLCAoKSA9PiB7XG4gIHRlc3QoXCJmYWxscyBiYWNrIHRvIGFzc2lzdGFudCB0ZXh0IHdoZW4gZXJyb3JNZXNzYWdlIGlzIHVuaW5mb3JtYXRpdmVcIiwgKCkgPT4ge1xuICAgIGFzc2VydC5lcXVhbChcbiAgICAgIHJlc29sdmVBZ2VudEVuZEVycm9yRGlzcGxheShcInN1Y2Nlc3NcIiwgW1xuICAgICAgICB7IHR5cGU6IFwidG9vbF91c2VcIiwgbmFtZTogXCJub29wXCIgfSxcbiAgICAgICAgeyB0eXBlOiBcInRleHRcIiwgdGV4dDogXCJwcm92aWRlciBmYWlsZWQgd2l0aCBhIHVzZWZ1bCBtZXNzYWdlXCIgfSxcbiAgICAgIF0pLFxuICAgICAgXCJwcm92aWRlciBmYWlsZWQgd2l0aCBhIHVzZWZ1bCBtZXNzYWdlXCIsXG4gICAgKTtcbiAgfSk7XG5cbiAgdGVzdChcImtlZXBzIGluZm9ybWF0aXZlIHJhdyBlcnJvciBtZXNzYWdlc1wiLCAoKSA9PiB7XG4gICAgYXNzZXJ0LmVxdWFsKFxuICAgICAgcmVzb2x2ZUFnZW50RW5kRXJyb3JEaXNwbGF5KFwicmF0ZSBsaW1pdCBleGNlZWRlZFwiLCBbXG4gICAgICAgIHsgdHlwZTogXCJ0ZXh0XCIsIHRleHQ6IFwicHJvc2Ugc2hvdWxkIG5vdCByZXBsYWNlIHVzZWZ1bCByYXcgZXJyb3JcIiB9LFxuICAgICAgXSksXG4gICAgICBcInJhdGUgbGltaXQgZXhjZWVkZWRcIixcbiAgICApO1xuICB9KTtcbn0pO1xuIl0sCiAgIm1hcHBpbmdzIjogIkFBUUEsU0FBUyxVQUFVLFlBQVk7QUFDL0IsT0FBTyxZQUFZO0FBQ25CLFNBQVMsbUNBQW1DO0FBRTVDLFNBQVMsd0NBQXdDLE1BQU07QUFDckQsT0FBSyxtRUFBbUUsTUFBTTtBQUM1RSxXQUFPO0FBQUEsTUFDTCw0QkFBNEIsV0FBVztBQUFBLFFBQ3JDLEVBQUUsTUFBTSxZQUFZLE1BQU0sT0FBTztBQUFBLFFBQ2pDLEVBQUUsTUFBTSxRQUFRLE1BQU0sd0NBQXdDO0FBQUEsTUFDaEUsQ0FBQztBQUFBLE1BQ0Q7QUFBQSxJQUNGO0FBQUEsRUFDRixDQUFDO0FBRUQsT0FBSyx3Q0FBd0MsTUFBTTtBQUNqRCxXQUFPO0FBQUEsTUFDTCw0QkFBNEIsdUJBQXVCO0FBQUEsUUFDakQsRUFBRSxNQUFNLFFBQVEsTUFBTSw0Q0FBNEM7QUFBQSxNQUNwRSxDQUFDO0FBQUEsTUFDRDtBQUFBLElBQ0Y7QUFBQSxFQUNGLENBQUM7QUFDSCxDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

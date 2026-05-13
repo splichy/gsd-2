@@ -1,0 +1,23 @@
+import { describe, test } from "node:test";
+import assert from "node:assert/strict";
+import { buildAuthUrlPresentation } from "../login-dialog.js";
+describe("LoginDialogComponent", () => {
+  test("shows the full OAuth URL when the hyperlink label is truncated", () => {
+    const presentation = buildAuthUrlPresentation(
+      "https://auth.example.com/device?code=ABCD-1234&callback=oauth&state=needs-full-visibility",
+      52
+    );
+    assert.notEqual(
+      presentation.displayUrl,
+      "https://auth.example.com/device?code=ABCD-1234&callback=oauth&state=needs-full-visibility",
+      "narrow terminals should still truncate the hyperlink label"
+    );
+    assert.ok(presentation.fullUrlLines.length > 1, "truncated URLs should expose wrapped full-url lines");
+    assert.match(presentation.fullUrlLines[0] ?? "", /https:\/\/auth\.example\.com\/device\?code=ABCD-1234&/);
+    assert.match(
+      presentation.fullUrlLines[presentation.fullUrlLines.length - 1] ?? "",
+      /state=needs-full-visibility/
+    );
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvcGktY29kaW5nLWFnZW50L3NyYy9tb2Rlcy9pbnRlcmFjdGl2ZS9jb21wb25lbnRzL19fdGVzdHNfXy9sb2dpbi1kaWFsb2cudGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHsgZGVzY3JpYmUsIHRlc3QgfSBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcbmltcG9ydCB7IGJ1aWxkQXV0aFVybFByZXNlbnRhdGlvbiB9IGZyb20gXCIuLi9sb2dpbi1kaWFsb2cuanNcIjtcblxuZGVzY3JpYmUoXCJMb2dpbkRpYWxvZ0NvbXBvbmVudFwiLCAoKSA9PiB7XG5cdHRlc3QoXCJzaG93cyB0aGUgZnVsbCBPQXV0aCBVUkwgd2hlbiB0aGUgaHlwZXJsaW5rIGxhYmVsIGlzIHRydW5jYXRlZFwiLCAoKSA9PiB7XG5cdFx0Y29uc3QgcHJlc2VudGF0aW9uID0gYnVpbGRBdXRoVXJsUHJlc2VudGF0aW9uKFxuXHRcdFx0XCJodHRwczovL2F1dGguZXhhbXBsZS5jb20vZGV2aWNlP2NvZGU9QUJDRC0xMjM0JmNhbGxiYWNrPW9hdXRoJnN0YXRlPW5lZWRzLWZ1bGwtdmlzaWJpbGl0eVwiLFxuXHRcdFx0NTIsXG5cdFx0KTtcblxuXHRcdGFzc2VydC5ub3RFcXVhbChcblx0XHRcdHByZXNlbnRhdGlvbi5kaXNwbGF5VXJsLFxuXHRcdFx0XCJodHRwczovL2F1dGguZXhhbXBsZS5jb20vZGV2aWNlP2NvZGU9QUJDRC0xMjM0JmNhbGxiYWNrPW9hdXRoJnN0YXRlPW5lZWRzLWZ1bGwtdmlzaWJpbGl0eVwiLFxuXHRcdFx0XCJuYXJyb3cgdGVybWluYWxzIHNob3VsZCBzdGlsbCB0cnVuY2F0ZSB0aGUgaHlwZXJsaW5rIGxhYmVsXCIsXG5cdFx0KTtcblx0XHRhc3NlcnQub2socHJlc2VudGF0aW9uLmZ1bGxVcmxMaW5lcy5sZW5ndGggPiAxLCBcInRydW5jYXRlZCBVUkxzIHNob3VsZCBleHBvc2Ugd3JhcHBlZCBmdWxsLXVybCBsaW5lc1wiKTtcblx0XHRhc3NlcnQubWF0Y2gocHJlc2VudGF0aW9uLmZ1bGxVcmxMaW5lc1swXSA/PyBcIlwiLCAvaHR0cHM6XFwvXFwvYXV0aFxcLmV4YW1wbGVcXC5jb21cXC9kZXZpY2VcXD9jb2RlPUFCQ0QtMTIzNCYvKTtcblx0XHRhc3NlcnQubWF0Y2goXG5cdFx0XHRwcmVzZW50YXRpb24uZnVsbFVybExpbmVzW3ByZXNlbnRhdGlvbi5mdWxsVXJsTGluZXMubGVuZ3RoIC0gMV0gPz8gXCJcIixcblx0XHRcdC9zdGF0ZT1uZWVkcy1mdWxsLXZpc2liaWxpdHkvLFxuXHRcdCk7XG5cdH0pO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxTQUFTLFVBQVUsWUFBWTtBQUMvQixPQUFPLFlBQVk7QUFDbkIsU0FBUyxnQ0FBZ0M7QUFFekMsU0FBUyx3QkFBd0IsTUFBTTtBQUN0QyxPQUFLLGtFQUFrRSxNQUFNO0FBQzVFLFVBQU0sZUFBZTtBQUFBLE1BQ3BCO0FBQUEsTUFDQTtBQUFBLElBQ0Q7QUFFQSxXQUFPO0FBQUEsTUFDTixhQUFhO0FBQUEsTUFDYjtBQUFBLE1BQ0E7QUFBQSxJQUNEO0FBQ0EsV0FBTyxHQUFHLGFBQWEsYUFBYSxTQUFTLEdBQUcscURBQXFEO0FBQ3JHLFdBQU8sTUFBTSxhQUFhLGFBQWEsQ0FBQyxLQUFLLElBQUksdURBQXVEO0FBQ3hHLFdBQU87QUFBQSxNQUNOLGFBQWEsYUFBYSxhQUFhLGFBQWEsU0FBUyxDQUFDLEtBQUs7QUFBQSxNQUNuRTtBQUFBLElBQ0Q7QUFBQSxFQUNELENBQUM7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

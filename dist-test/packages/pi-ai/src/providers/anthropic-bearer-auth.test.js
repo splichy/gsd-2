@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { buildAnthropicClientOptions } from "./anthropic.js";
+function anthropicModel(overrides = {}) {
+  return {
+    id: "claude-sonnet-4",
+    name: "Claude Sonnet 4",
+    api: "anthropic-messages",
+    provider: "anthropic",
+    baseUrl: "https://api.anthropic.com",
+    reasoning: true,
+    input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: 2e5,
+    maxTokens: 8192,
+    ...overrides
+  };
+}
+describe("anthropic bearer auth for custom providers (#3874)", () => {
+  it("treats Bearer Authorization headers as authToken-capable providers", () => {
+    const options = buildAnthropicClientOptions(
+      anthropicModel({
+        provider: "custom-anthropic-compatible",
+        headers: { Authorization: "Bearer upstream-token" }
+      }),
+      "request-token",
+      false
+    );
+    assert.equal(options.apiKey, null, "custom providers with Authorization headers should not send x-api-key");
+    assert.equal(options.authToken, "request-token", "custom providers with Authorization headers should use authToken");
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvcGktYWkvc3JjL3Byb3ZpZGVycy9hbnRocm9waWMtYmVhcmVyLWF1dGgudGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5pbXBvcnQgeyBkZXNjcmliZSwgaXQgfSBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgdHlwZSB7IE1vZGVsIH0gZnJvbSBcIi4uL3R5cGVzLmpzXCI7XG5pbXBvcnQgeyBidWlsZEFudGhyb3BpY0NsaWVudE9wdGlvbnMgfSBmcm9tIFwiLi9hbnRocm9waWMuanNcIjtcblxuZnVuY3Rpb24gYW50aHJvcGljTW9kZWwob3ZlcnJpZGVzOiBQYXJ0aWFsPE1vZGVsPFwiYW50aHJvcGljLW1lc3NhZ2VzXCI+PiA9IHt9KTogTW9kZWw8XCJhbnRocm9waWMtbWVzc2FnZXNcIj4ge1xuXHRyZXR1cm4ge1xuXHRcdGlkOiBcImNsYXVkZS1zb25uZXQtNFwiLFxuXHRcdG5hbWU6IFwiQ2xhdWRlIFNvbm5ldCA0XCIsXG5cdFx0YXBpOiBcImFudGhyb3BpYy1tZXNzYWdlc1wiLFxuXHRcdHByb3ZpZGVyOiBcImFudGhyb3BpY1wiLFxuXHRcdGJhc2VVcmw6IFwiaHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbVwiLFxuXHRcdHJlYXNvbmluZzogdHJ1ZSxcblx0XHRpbnB1dDogW1widGV4dFwiXSxcblx0XHRjb3N0OiB7IGlucHV0OiAwLCBvdXRwdXQ6IDAsIGNhY2hlUmVhZDogMCwgY2FjaGVXcml0ZTogMCB9LFxuXHRcdGNvbnRleHRXaW5kb3c6IDIwMDAwMCxcblx0XHRtYXhUb2tlbnM6IDgxOTIsXG5cdFx0Li4ub3ZlcnJpZGVzLFxuXHR9O1xufVxuXG5kZXNjcmliZShcImFudGhyb3BpYyBiZWFyZXIgYXV0aCBmb3IgY3VzdG9tIHByb3ZpZGVycyAoIzM4NzQpXCIsICgpID0+IHtcblx0aXQoXCJ0cmVhdHMgQmVhcmVyIEF1dGhvcml6YXRpb24gaGVhZGVycyBhcyBhdXRoVG9rZW4tY2FwYWJsZSBwcm92aWRlcnNcIiwgKCkgPT4ge1xuXHRcdGNvbnN0IG9wdGlvbnMgPSBidWlsZEFudGhyb3BpY0NsaWVudE9wdGlvbnMoXG5cdFx0XHRhbnRocm9waWNNb2RlbCh7XG5cdFx0XHRcdHByb3ZpZGVyOiBcImN1c3RvbS1hbnRocm9waWMtY29tcGF0aWJsZVwiLFxuXHRcdFx0XHRoZWFkZXJzOiB7IEF1dGhvcml6YXRpb246IFwiQmVhcmVyIHVwc3RyZWFtLXRva2VuXCIgfSxcblx0XHRcdH0pLFxuXHRcdFx0XCJyZXF1ZXN0LXRva2VuXCIsXG5cdFx0XHRmYWxzZSxcblx0XHQpO1xuXG5cdFx0YXNzZXJ0LmVxdWFsKG9wdGlvbnMuYXBpS2V5LCBudWxsLCBcImN1c3RvbSBwcm92aWRlcnMgd2l0aCBBdXRob3JpemF0aW9uIGhlYWRlcnMgc2hvdWxkIG5vdCBzZW5kIHgtYXBpLWtleVwiKTtcblx0XHRhc3NlcnQuZXF1YWwob3B0aW9ucy5hdXRoVG9rZW4sIFwicmVxdWVzdC10b2tlblwiLCBcImN1c3RvbSBwcm92aWRlcnMgd2l0aCBBdXRob3JpemF0aW9uIGhlYWRlcnMgc2hvdWxkIHVzZSBhdXRoVG9rZW5cIik7XG5cdH0pO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxPQUFPLFlBQVk7QUFDbkIsU0FBUyxVQUFVLFVBQVU7QUFFN0IsU0FBUyxtQ0FBbUM7QUFFNUMsU0FBUyxlQUFlLFlBQWtELENBQUMsR0FBZ0M7QUFDMUcsU0FBTztBQUFBLElBQ04sSUFBSTtBQUFBLElBQ0osTUFBTTtBQUFBLElBQ04sS0FBSztBQUFBLElBQ0wsVUFBVTtBQUFBLElBQ1YsU0FBUztBQUFBLElBQ1QsV0FBVztBQUFBLElBQ1gsT0FBTyxDQUFDLE1BQU07QUFBQSxJQUNkLE1BQU0sRUFBRSxPQUFPLEdBQUcsUUFBUSxHQUFHLFdBQVcsR0FBRyxZQUFZLEVBQUU7QUFBQSxJQUN6RCxlQUFlO0FBQUEsSUFDZixXQUFXO0FBQUEsSUFDWCxHQUFHO0FBQUEsRUFDSjtBQUNEO0FBRUEsU0FBUyxzREFBc0QsTUFBTTtBQUNwRSxLQUFHLHNFQUFzRSxNQUFNO0FBQzlFLFVBQU0sVUFBVTtBQUFBLE1BQ2YsZUFBZTtBQUFBLFFBQ2QsVUFBVTtBQUFBLFFBQ1YsU0FBUyxFQUFFLGVBQWUsd0JBQXdCO0FBQUEsTUFDbkQsQ0FBQztBQUFBLE1BQ0Q7QUFBQSxNQUNBO0FBQUEsSUFDRDtBQUVBLFdBQU8sTUFBTSxRQUFRLFFBQVEsTUFBTSx1RUFBdUU7QUFDMUcsV0FBTyxNQUFNLFFBQVEsV0FBVyxpQkFBaUIsa0VBQWtFO0FBQUEsRUFDcEgsQ0FBQztBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

@@ -1,0 +1,36 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { buildQuickCommitInstruction } from "../quick.js";
+function git(cwd, args) {
+  const result = spawnSync("git", args, { cwd, encoding: "utf-8" });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+}
+test("quick task commit instruction does not ask agents to stage external .gsd quick files", { skip: process.platform === "win32" }, () => {
+  const tempRoot = realpathSync(mkdtempSync(join(tmpdir(), "gsd-quick-ext-")));
+  const repo = join(tempRoot, "repo");
+  const externalGsd = join(tempRoot, "state");
+  mkdirSync(repo);
+  mkdirSync(externalGsd);
+  const previousCwd = process.cwd();
+  try {
+    git(repo, ["init"]);
+    git(repo, ["config", "user.email", "test@example.com"]);
+    git(repo, ["config", "user.name", "Test User"]);
+    writeFileSync(join(repo, "README.md"), "# Test\n", "utf-8");
+    git(repo, ["add", "README.md"]);
+    git(repo, ["commit", "-m", "init"]);
+    symlinkSync(externalGsd, join(repo, ".gsd"), "dir");
+    const instruction = buildQuickCommitInstruction(repo, join(repo, ".gsd"));
+    assert.match(instruction, /do not stage or commit `\.gsd\/quick\/\.\.\.`/);
+    assert.match(instruction, /nothing in the project repo to commit/);
+    assert.match(instruction, /Write the quick summary file directly/);
+  } finally {
+    process.chdir(previousCwd);
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9xdWljay1leHRlcm5hbC1nc2QudGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHRlc3QgZnJvbSBcIm5vZGU6dGVzdFwiO1xuaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5pbXBvcnQgeyBta2R0ZW1wU3luYywgbWtkaXJTeW5jLCByZWFscGF0aFN5bmMsIHJtU3luYywgc3ltbGlua1N5bmMsIHdyaXRlRmlsZVN5bmMgfSBmcm9tIFwibm9kZTpmc1wiO1xuaW1wb3J0IHsgdG1wZGlyIH0gZnJvbSBcIm5vZGU6b3NcIjtcbmltcG9ydCB7IGpvaW4gfSBmcm9tIFwibm9kZTpwYXRoXCI7XG5pbXBvcnQgeyBzcGF3blN5bmMgfSBmcm9tIFwibm9kZTpjaGlsZF9wcm9jZXNzXCI7XG5pbXBvcnQgeyBidWlsZFF1aWNrQ29tbWl0SW5zdHJ1Y3Rpb24gfSBmcm9tIFwiLi4vcXVpY2sudHNcIjtcblxuZnVuY3Rpb24gZ2l0KGN3ZDogc3RyaW5nLCBhcmdzOiBzdHJpbmdbXSk6IHZvaWQge1xuICBjb25zdCByZXN1bHQgPSBzcGF3blN5bmMoXCJnaXRcIiwgYXJncywgeyBjd2QsIGVuY29kaW5nOiBcInV0Zi04XCIgfSk7XG4gIGFzc2VydC5lcXVhbChyZXN1bHQuc3RhdHVzLCAwLCByZXN1bHQuc3RkZXJyIHx8IHJlc3VsdC5zdGRvdXQpO1xufVxuXG50ZXN0KFwicXVpY2sgdGFzayBjb21taXQgaW5zdHJ1Y3Rpb24gZG9lcyBub3QgYXNrIGFnZW50cyB0byBzdGFnZSBleHRlcm5hbCAuZ3NkIHF1aWNrIGZpbGVzXCIsIHsgc2tpcDogcHJvY2Vzcy5wbGF0Zm9ybSA9PT0gXCJ3aW4zMlwiIH0sICgpID0+IHtcbiAgY29uc3QgdGVtcFJvb3QgPSByZWFscGF0aFN5bmMobWtkdGVtcFN5bmMoam9pbih0bXBkaXIoKSwgXCJnc2QtcXVpY2stZXh0LVwiKSkpO1xuICBjb25zdCByZXBvID0gam9pbih0ZW1wUm9vdCwgXCJyZXBvXCIpO1xuICBjb25zdCBleHRlcm5hbEdzZCA9IGpvaW4odGVtcFJvb3QsIFwic3RhdGVcIik7XG4gIG1rZGlyU3luYyhyZXBvKTtcbiAgbWtkaXJTeW5jKGV4dGVybmFsR3NkKTtcblxuICBjb25zdCBwcmV2aW91c0N3ZCA9IHByb2Nlc3MuY3dkKCk7XG4gIHRyeSB7XG4gICAgZ2l0KHJlcG8sIFtcImluaXRcIl0pO1xuICAgIGdpdChyZXBvLCBbXCJjb25maWdcIiwgXCJ1c2VyLmVtYWlsXCIsIFwidGVzdEBleGFtcGxlLmNvbVwiXSk7XG4gICAgZ2l0KHJlcG8sIFtcImNvbmZpZ1wiLCBcInVzZXIubmFtZVwiLCBcIlRlc3QgVXNlclwiXSk7XG4gICAgd3JpdGVGaWxlU3luYyhqb2luKHJlcG8sIFwiUkVBRE1FLm1kXCIpLCBcIiMgVGVzdFxcblwiLCBcInV0Zi04XCIpO1xuICAgIGdpdChyZXBvLCBbXCJhZGRcIiwgXCJSRUFETUUubWRcIl0pO1xuICAgIGdpdChyZXBvLCBbXCJjb21taXRcIiwgXCItbVwiLCBcImluaXRcIl0pO1xuICAgIHN5bWxpbmtTeW5jKGV4dGVybmFsR3NkLCBqb2luKHJlcG8sIFwiLmdzZFwiKSwgXCJkaXJcIik7XG5cbiAgICBjb25zdCBpbnN0cnVjdGlvbiA9IGJ1aWxkUXVpY2tDb21taXRJbnN0cnVjdGlvbihyZXBvLCBqb2luKHJlcG8sIFwiLmdzZFwiKSk7XG5cbiAgICBhc3NlcnQubWF0Y2goaW5zdHJ1Y3Rpb24sIC9kbyBub3Qgc3RhZ2Ugb3IgY29tbWl0IGBcXC5nc2RcXC9xdWlja1xcL1xcLlxcLlxcLmAvKTtcbiAgICBhc3NlcnQubWF0Y2goaW5zdHJ1Y3Rpb24sIC9ub3RoaW5nIGluIHRoZSBwcm9qZWN0IHJlcG8gdG8gY29tbWl0Lyk7XG4gICAgYXNzZXJ0Lm1hdGNoKGluc3RydWN0aW9uLCAvV3JpdGUgdGhlIHF1aWNrIHN1bW1hcnkgZmlsZSBkaXJlY3RseS8pO1xuICB9IGZpbmFsbHkge1xuICAgIHByb2Nlc3MuY2hkaXIocHJldmlvdXNDd2QpO1xuICAgIHJtU3luYyh0ZW1wUm9vdCwgeyByZWN1cnNpdmU6IHRydWUsIGZvcmNlOiB0cnVlIH0pO1xuICB9XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFDbkIsU0FBUyxhQUFhLFdBQVcsY0FBYyxRQUFRLGFBQWEscUJBQXFCO0FBQ3pGLFNBQVMsY0FBYztBQUN2QixTQUFTLFlBQVk7QUFDckIsU0FBUyxpQkFBaUI7QUFDMUIsU0FBUyxtQ0FBbUM7QUFFNUMsU0FBUyxJQUFJLEtBQWEsTUFBc0I7QUFDOUMsUUFBTSxTQUFTLFVBQVUsT0FBTyxNQUFNLEVBQUUsS0FBSyxVQUFVLFFBQVEsQ0FBQztBQUNoRSxTQUFPLE1BQU0sT0FBTyxRQUFRLEdBQUcsT0FBTyxVQUFVLE9BQU8sTUFBTTtBQUMvRDtBQUVBLEtBQUssd0ZBQXdGLEVBQUUsTUFBTSxRQUFRLGFBQWEsUUFBUSxHQUFHLE1BQU07QUFDekksUUFBTSxXQUFXLGFBQWEsWUFBWSxLQUFLLE9BQU8sR0FBRyxnQkFBZ0IsQ0FBQyxDQUFDO0FBQzNFLFFBQU0sT0FBTyxLQUFLLFVBQVUsTUFBTTtBQUNsQyxRQUFNLGNBQWMsS0FBSyxVQUFVLE9BQU87QUFDMUMsWUFBVSxJQUFJO0FBQ2QsWUFBVSxXQUFXO0FBRXJCLFFBQU0sY0FBYyxRQUFRLElBQUk7QUFDaEMsTUFBSTtBQUNGLFFBQUksTUFBTSxDQUFDLE1BQU0sQ0FBQztBQUNsQixRQUFJLE1BQU0sQ0FBQyxVQUFVLGNBQWMsa0JBQWtCLENBQUM7QUFDdEQsUUFBSSxNQUFNLENBQUMsVUFBVSxhQUFhLFdBQVcsQ0FBQztBQUM5QyxrQkFBYyxLQUFLLE1BQU0sV0FBVyxHQUFHLFlBQVksT0FBTztBQUMxRCxRQUFJLE1BQU0sQ0FBQyxPQUFPLFdBQVcsQ0FBQztBQUM5QixRQUFJLE1BQU0sQ0FBQyxVQUFVLE1BQU0sTUFBTSxDQUFDO0FBQ2xDLGdCQUFZLGFBQWEsS0FBSyxNQUFNLE1BQU0sR0FBRyxLQUFLO0FBRWxELFVBQU0sY0FBYyw0QkFBNEIsTUFBTSxLQUFLLE1BQU0sTUFBTSxDQUFDO0FBRXhFLFdBQU8sTUFBTSxhQUFhLCtDQUErQztBQUN6RSxXQUFPLE1BQU0sYUFBYSx1Q0FBdUM7QUFDakUsV0FBTyxNQUFNLGFBQWEsdUNBQXVDO0FBQUEsRUFDbkUsVUFBRTtBQUNBLFlBQVEsTUFBTSxXQUFXO0FBQ3pCLFdBQU8sVUFBVSxFQUFFLFdBQVcsTUFBTSxPQUFPLEtBQUssQ0FBQztBQUFBLEVBQ25EO0FBQ0YsQ0FBQzsiLAogICJuYW1lcyI6IFtdCn0K

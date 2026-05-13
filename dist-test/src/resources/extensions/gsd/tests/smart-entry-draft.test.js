@@ -1,0 +1,29 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { deriveState } from "../state.js";
+import { resolveMilestoneFile } from "../paths.js";
+function writeDraftOnlyMilestone(base) {
+  const milestoneDir = join(base, ".gsd", "milestones", "M001");
+  mkdirSync(milestoneDir, { recursive: true });
+  writeFileSync(
+    join(milestoneDir, "M001-CONTEXT-DRAFT.md"),
+    "# M001: Test Milestone\n\n**Status:** Draft\n\nSeed material.\n"
+  );
+}
+test("deriveState returns needs-discussion for draft-only milestone", async () => {
+  const base = mkdtempSync(join(tmpdir(), "gsd-smart-entry-draft-"));
+  try {
+    writeDraftOnlyMilestone(base);
+    const state = await deriveState(base);
+    assert.equal(state.phase, "needs-discussion");
+    assert.equal(state.activeMilestone?.id, "M001");
+    assert.match(resolveMilestoneFile(base, "M001", "CONTEXT-DRAFT") ?? "", /M001-CONTEXT-DRAFT\.md$/);
+    assert.equal(resolveMilestoneFile(base, "M001", "CONTEXT"), null);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9zbWFydC1lbnRyeS1kcmFmdC50ZXN0LnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyIvLyBHU0QtMiBcdTIwMTQgR3VpZGVkIHNtYXJ0IGVudHJ5IGRyYWZ0LXN0YXRlIGJlaGF2aW9yIHRlc3RzLlxuXG5pbXBvcnQgdGVzdCBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcbmltcG9ydCB7IG1rZHRlbXBTeW5jLCBta2RpclN5bmMsIHJtU3luYywgd3JpdGVGaWxlU3luYyB9IGZyb20gXCJub2RlOmZzXCI7XG5pbXBvcnQgeyBqb2luIH0gZnJvbSBcIm5vZGU6cGF0aFwiO1xuaW1wb3J0IHsgdG1wZGlyIH0gZnJvbSBcIm5vZGU6b3NcIjtcblxuaW1wb3J0IHsgZGVyaXZlU3RhdGUgfSBmcm9tIFwiLi4vc3RhdGUuanNcIjtcbmltcG9ydCB7IHJlc29sdmVNaWxlc3RvbmVGaWxlIH0gZnJvbSBcIi4uL3BhdGhzLmpzXCI7XG5cbmZ1bmN0aW9uIHdyaXRlRHJhZnRPbmx5TWlsZXN0b25lKGJhc2U6IHN0cmluZyk6IHZvaWQge1xuICBjb25zdCBtaWxlc3RvbmVEaXIgPSBqb2luKGJhc2UsIFwiLmdzZFwiLCBcIm1pbGVzdG9uZXNcIiwgXCJNMDAxXCIpO1xuICBta2RpclN5bmMobWlsZXN0b25lRGlyLCB7IHJlY3Vyc2l2ZTogdHJ1ZSB9KTtcbiAgd3JpdGVGaWxlU3luYyhcbiAgICBqb2luKG1pbGVzdG9uZURpciwgXCJNMDAxLUNPTlRFWFQtRFJBRlQubWRcIiksXG4gICAgXCIjIE0wMDE6IFRlc3QgTWlsZXN0b25lXFxuXFxuKipTdGF0dXM6KiogRHJhZnRcXG5cXG5TZWVkIG1hdGVyaWFsLlxcblwiLFxuICApO1xufVxuXG50ZXN0KFwiZGVyaXZlU3RhdGUgcmV0dXJucyBuZWVkcy1kaXNjdXNzaW9uIGZvciBkcmFmdC1vbmx5IG1pbGVzdG9uZVwiLCBhc3luYyAoKSA9PiB7XG4gIGNvbnN0IGJhc2UgPSBta2R0ZW1wU3luYyhqb2luKHRtcGRpcigpLCBcImdzZC1zbWFydC1lbnRyeS1kcmFmdC1cIikpO1xuICB0cnkge1xuICAgIHdyaXRlRHJhZnRPbmx5TWlsZXN0b25lKGJhc2UpO1xuICAgIGNvbnN0IHN0YXRlID0gYXdhaXQgZGVyaXZlU3RhdGUoYmFzZSk7XG4gICAgYXNzZXJ0LmVxdWFsKHN0YXRlLnBoYXNlLCBcIm5lZWRzLWRpc2N1c3Npb25cIik7XG4gICAgYXNzZXJ0LmVxdWFsKHN0YXRlLmFjdGl2ZU1pbGVzdG9uZT8uaWQsIFwiTTAwMVwiKTtcbiAgICBhc3NlcnQubWF0Y2gocmVzb2x2ZU1pbGVzdG9uZUZpbGUoYmFzZSwgXCJNMDAxXCIsIFwiQ09OVEVYVC1EUkFGVFwiKSA/PyBcIlwiLCAvTTAwMS1DT05URVhULURSQUZUXFwubWQkLyk7XG4gICAgYXNzZXJ0LmVxdWFsKHJlc29sdmVNaWxlc3RvbmVGaWxlKGJhc2UsIFwiTTAwMVwiLCBcIkNPTlRFWFRcIiksIG51bGwpO1xuICB9IGZpbmFsbHkge1xuICAgIHJtU3luYyhiYXNlLCB7IHJlY3Vyc2l2ZTogdHJ1ZSwgZm9yY2U6IHRydWUgfSk7XG4gIH1cbn0pO1xuIl0sCiAgIm1hcHBpbmdzIjogIkFBRUEsT0FBTyxVQUFVO0FBQ2pCLE9BQU8sWUFBWTtBQUNuQixTQUFTLGFBQWEsV0FBVyxRQUFRLHFCQUFxQjtBQUM5RCxTQUFTLFlBQVk7QUFDckIsU0FBUyxjQUFjO0FBRXZCLFNBQVMsbUJBQW1CO0FBQzVCLFNBQVMsNEJBQTRCO0FBRXJDLFNBQVMsd0JBQXdCLE1BQW9CO0FBQ25ELFFBQU0sZUFBZSxLQUFLLE1BQU0sUUFBUSxjQUFjLE1BQU07QUFDNUQsWUFBVSxjQUFjLEVBQUUsV0FBVyxLQUFLLENBQUM7QUFDM0M7QUFBQSxJQUNFLEtBQUssY0FBYyx1QkFBdUI7QUFBQSxJQUMxQztBQUFBLEVBQ0Y7QUFDRjtBQUVBLEtBQUssaUVBQWlFLFlBQVk7QUFDaEYsUUFBTSxPQUFPLFlBQVksS0FBSyxPQUFPLEdBQUcsd0JBQXdCLENBQUM7QUFDakUsTUFBSTtBQUNGLDRCQUF3QixJQUFJO0FBQzVCLFVBQU0sUUFBUSxNQUFNLFlBQVksSUFBSTtBQUNwQyxXQUFPLE1BQU0sTUFBTSxPQUFPLGtCQUFrQjtBQUM1QyxXQUFPLE1BQU0sTUFBTSxpQkFBaUIsSUFBSSxNQUFNO0FBQzlDLFdBQU8sTUFBTSxxQkFBcUIsTUFBTSxRQUFRLGVBQWUsS0FBSyxJQUFJLHlCQUF5QjtBQUNqRyxXQUFPLE1BQU0scUJBQXFCLE1BQU0sUUFBUSxTQUFTLEdBQUcsSUFBSTtBQUFBLEVBQ2xFLFVBQUU7QUFDQSxXQUFPLE1BQU0sRUFBRSxXQUFXLE1BQU0sT0FBTyxLQUFLLENBQUM7QUFBQSxFQUMvQztBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

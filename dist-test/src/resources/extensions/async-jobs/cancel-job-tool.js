@@ -1,0 +1,29 @@
+import { Type } from "@sinclair/typebox";
+const schema = Type.Object({
+  job_id: Type.String({ description: "The background job ID to cancel (e.g. bg_a1b2c3d4)" })
+});
+function createCancelJobTool(getManager) {
+  return {
+    name: "cancel_job",
+    label: "Cancel Background Job",
+    description: "Cancel a running background job by its ID.",
+    parameters: schema,
+    async execute(_toolCallId, params, _signal, _onUpdate, _ctx) {
+      const manager = getManager();
+      const result = manager.cancel(params.job_id);
+      const messages = {
+        cancelled: `Job ${params.job_id} has been cancelled.`,
+        not_found: `Job ${params.job_id} not found.`,
+        already_completed: `Job ${params.job_id} has already completed (or failed/cancelled).`
+      };
+      return {
+        content: [{ type: "text", text: messages[result] ?? `Unknown result: ${result}` }],
+        details: void 0
+      };
+    }
+  };
+}
+export {
+  createCancelJobTool
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2FzeW5jLWpvYnMvY2FuY2VsLWpvYi10b29sLnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyIvKipcbiAqIGNhbmNlbF9qb2IgdG9vbCBcdTIwMTQgY2FuY2VsIGEgcnVubmluZyBiYWNrZ3JvdW5kIGpvYi5cbiAqL1xuXG5pbXBvcnQgdHlwZSB7IFRvb2xEZWZpbml0aW9uIH0gZnJvbSBcIkBnc2QvcGktY29kaW5nLWFnZW50XCI7XG5pbXBvcnQgeyBUeXBlIH0gZnJvbSBcIkBzaW5jbGFpci90eXBlYm94XCI7XG5pbXBvcnQgdHlwZSB7IEFzeW5jSm9iTWFuYWdlciB9IGZyb20gXCIuL2pvYi1tYW5hZ2VyLmpzXCI7XG5cbmNvbnN0IHNjaGVtYSA9IFR5cGUuT2JqZWN0KHtcblx0am9iX2lkOiBUeXBlLlN0cmluZyh7IGRlc2NyaXB0aW9uOiBcIlRoZSBiYWNrZ3JvdW5kIGpvYiBJRCB0byBjYW5jZWwgKGUuZy4gYmdfYTFiMmMzZDQpXCIgfSksXG59KTtcblxuZXhwb3J0IGZ1bmN0aW9uIGNyZWF0ZUNhbmNlbEpvYlRvb2woZ2V0TWFuYWdlcjogKCkgPT4gQXN5bmNKb2JNYW5hZ2VyKTogVG9vbERlZmluaXRpb248dHlwZW9mIHNjaGVtYT4ge1xuXHRyZXR1cm4ge1xuXHRcdG5hbWU6IFwiY2FuY2VsX2pvYlwiLFxuXHRcdGxhYmVsOiBcIkNhbmNlbCBCYWNrZ3JvdW5kIEpvYlwiLFxuXHRcdGRlc2NyaXB0aW9uOiBcIkNhbmNlbCBhIHJ1bm5pbmcgYmFja2dyb3VuZCBqb2IgYnkgaXRzIElELlwiLFxuXHRcdHBhcmFtZXRlcnM6IHNjaGVtYSxcblx0XHRhc3luYyBleGVjdXRlKF90b29sQ2FsbElkLCBwYXJhbXMsIF9zaWduYWwsIF9vblVwZGF0ZSwgX2N0eCkge1xuXHRcdFx0Y29uc3QgbWFuYWdlciA9IGdldE1hbmFnZXIoKTtcblx0XHRcdGNvbnN0IHJlc3VsdCA9IG1hbmFnZXIuY2FuY2VsKHBhcmFtcy5qb2JfaWQpO1xuXG5cdFx0XHRjb25zdCBtZXNzYWdlczogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHtcblx0XHRcdFx0Y2FuY2VsbGVkOiBgSm9iICR7cGFyYW1zLmpvYl9pZH0gaGFzIGJlZW4gY2FuY2VsbGVkLmAsXG5cdFx0XHRcdG5vdF9mb3VuZDogYEpvYiAke3BhcmFtcy5qb2JfaWR9IG5vdCBmb3VuZC5gLFxuXHRcdFx0XHRhbHJlYWR5X2NvbXBsZXRlZDogYEpvYiAke3BhcmFtcy5qb2JfaWR9IGhhcyBhbHJlYWR5IGNvbXBsZXRlZCAob3IgZmFpbGVkL2NhbmNlbGxlZCkuYCxcblx0XHRcdH07XG5cblx0XHRcdHJldHVybiB7XG5cdFx0XHRcdGNvbnRlbnQ6IFt7IHR5cGU6IFwidGV4dFwiLCB0ZXh0OiBtZXNzYWdlc1tyZXN1bHRdID8/IGBVbmtub3duIHJlc3VsdDogJHtyZXN1bHR9YCB9XSxcblx0XHRcdFx0ZGV0YWlsczogdW5kZWZpbmVkLFxuXHRcdFx0fTtcblx0XHR9LFxuXHR9O1xufVxuIl0sCiAgIm1hcHBpbmdzIjogIkFBS0EsU0FBUyxZQUFZO0FBR3JCLE1BQU0sU0FBUyxLQUFLLE9BQU87QUFBQSxFQUMxQixRQUFRLEtBQUssT0FBTyxFQUFFLGFBQWEscURBQXFELENBQUM7QUFDMUYsQ0FBQztBQUVNLFNBQVMsb0JBQW9CLFlBQWtFO0FBQ3JHLFNBQU87QUFBQSxJQUNOLE1BQU07QUFBQSxJQUNOLE9BQU87QUFBQSxJQUNQLGFBQWE7QUFBQSxJQUNiLFlBQVk7QUFBQSxJQUNaLE1BQU0sUUFBUSxhQUFhLFFBQVEsU0FBUyxXQUFXLE1BQU07QUFDNUQsWUFBTSxVQUFVLFdBQVc7QUFDM0IsWUFBTSxTQUFTLFFBQVEsT0FBTyxPQUFPLE1BQU07QUFFM0MsWUFBTSxXQUFtQztBQUFBLFFBQ3hDLFdBQVcsT0FBTyxPQUFPLE1BQU07QUFBQSxRQUMvQixXQUFXLE9BQU8sT0FBTyxNQUFNO0FBQUEsUUFDL0IsbUJBQW1CLE9BQU8sT0FBTyxNQUFNO0FBQUEsTUFDeEM7QUFFQSxhQUFPO0FBQUEsUUFDTixTQUFTLENBQUMsRUFBRSxNQUFNLFFBQVEsTUFBTSxTQUFTLE1BQU0sS0FBSyxtQkFBbUIsTUFBTSxHQUFHLENBQUM7QUFBQSxRQUNqRixTQUFTO0FBQUEsTUFDVjtBQUFBLElBQ0Q7QUFBQSxFQUNEO0FBQ0Q7IiwKICAibmFtZXMiOiBbXQp9Cg==

@@ -1,0 +1,37 @@
+import { afterEach, test } from "node:test";
+import assert from "node:assert/strict";
+import { closeDatabase } from "../gsd-db.js";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { filterDoctorIssues } from "../doctor-format.js";
+import { checkEngineHealth } from "../doctor-engine-checks.js";
+afterEach(() => {
+  closeDatabase();
+});
+test("filterDoctorIssues keeps project and environment issues in scoped reports", () => {
+  const issues = [
+    { severity: "error", code: "env_dependencies", scope: "project", unitId: "environment", message: "node_modules missing", fixable: false },
+    { severity: "warning", code: "db_unavailable", scope: "project", unitId: "project", message: "DB unavailable", fixable: false },
+    { severity: "warning", code: "state_file_missing", scope: "slice", unitId: "M016/S01", message: "slice warning", fixable: false }
+  ];
+  const filtered = filterDoctorIssues([...issues], { scope: "M016", includeWarnings: true });
+  assert.deepEqual(
+    filtered.map((issue) => issue.unitId),
+    ["environment", "project", "M016/S01"]
+  );
+});
+test("checkEngineHealth reports db_unavailable when gsd.db exists but the DB is closed", async (t) => {
+  const base = mkdtempSync(join(tmpdir(), "gsd-doctor-db-unavailable-"));
+  t.after(() => rmSync(base, { recursive: true, force: true }));
+  const gsdDir = join(base, ".gsd");
+  mkdirSync(gsdDir, { recursive: true });
+  writeFileSync(join(gsdDir, "gsd.db"), "");
+  const issues = [];
+  await checkEngineHealth(base, issues, []);
+  const dbIssue = issues.find((issue) => issue.code === "db_unavailable");
+  assert.ok(dbIssue, "doctor should surface degraded DB mode when a DB file exists");
+  assert.equal(dbIssue.unitId, "project");
+  assert.equal(dbIssue.file, ".gsd/gsd.db");
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9kb2N0b3Itc2NvcGUtZGItdW5hdmFpbGFibGUudGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHsgYWZ0ZXJFYWNoLCB0ZXN0IH0gZnJvbSBcIm5vZGU6dGVzdFwiO1xuaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5pbXBvcnQgeyBjbG9zZURhdGFiYXNlIH0gZnJvbSBcIi4uL2dzZC1kYi50c1wiO1xuaW1wb3J0IHsgbWtkdGVtcFN5bmMsIG1rZGlyU3luYywgcm1TeW5jLCB3cml0ZUZpbGVTeW5jIH0gZnJvbSBcIm5vZGU6ZnNcIjtcbmltcG9ydCB7IGpvaW4gfSBmcm9tIFwibm9kZTpwYXRoXCI7XG5pbXBvcnQgeyB0bXBkaXIgfSBmcm9tIFwibm9kZTpvc1wiO1xuaW1wb3J0IHsgZmlsdGVyRG9jdG9ySXNzdWVzIH0gZnJvbSBcIi4uL2RvY3Rvci1mb3JtYXQudHNcIjtcbmltcG9ydCB7IGNoZWNrRW5naW5lSGVhbHRoIH0gZnJvbSBcIi4uL2RvY3Rvci1lbmdpbmUtY2hlY2tzLnRzXCI7XG5cbmFmdGVyRWFjaCgoKSA9PiB7XG4gIGNsb3NlRGF0YWJhc2UoKTtcbn0pO1xuXG50ZXN0KFwiZmlsdGVyRG9jdG9ySXNzdWVzIGtlZXBzIHByb2plY3QgYW5kIGVudmlyb25tZW50IGlzc3VlcyBpbiBzY29wZWQgcmVwb3J0c1wiLCAoKSA9PiB7XG4gIGNvbnN0IGlzc3VlcyA9IFtcbiAgICB7IHNldmVyaXR5OiBcImVycm9yXCIsIGNvZGU6IFwiZW52X2RlcGVuZGVuY2llc1wiLCBzY29wZTogXCJwcm9qZWN0XCIsIHVuaXRJZDogXCJlbnZpcm9ubWVudFwiLCBtZXNzYWdlOiBcIm5vZGVfbW9kdWxlcyBtaXNzaW5nXCIsIGZpeGFibGU6IGZhbHNlIH0sXG4gICAgeyBzZXZlcml0eTogXCJ3YXJuaW5nXCIsIGNvZGU6IFwiZGJfdW5hdmFpbGFibGVcIiwgc2NvcGU6IFwicHJvamVjdFwiLCB1bml0SWQ6IFwicHJvamVjdFwiLCBtZXNzYWdlOiBcIkRCIHVuYXZhaWxhYmxlXCIsIGZpeGFibGU6IGZhbHNlIH0sXG4gICAgeyBzZXZlcml0eTogXCJ3YXJuaW5nXCIsIGNvZGU6IFwic3RhdGVfZmlsZV9taXNzaW5nXCIsIHNjb3BlOiBcInNsaWNlXCIsIHVuaXRJZDogXCJNMDE2L1MwMVwiLCBtZXNzYWdlOiBcInNsaWNlIHdhcm5pbmdcIiwgZml4YWJsZTogZmFsc2UgfSxcbiAgXSBhcyBjb25zdDtcblxuICBjb25zdCBmaWx0ZXJlZCA9IGZpbHRlckRvY3Rvcklzc3VlcyhbLi4uaXNzdWVzXSwgeyBzY29wZTogXCJNMDE2XCIsIGluY2x1ZGVXYXJuaW5nczogdHJ1ZSB9KTtcbiAgYXNzZXJ0LmRlZXBFcXVhbChcbiAgICBmaWx0ZXJlZC5tYXAoKGlzc3VlKSA9PiBpc3N1ZS51bml0SWQpLFxuICAgIFtcImVudmlyb25tZW50XCIsIFwicHJvamVjdFwiLCBcIk0wMTYvUzAxXCJdLFxuICApO1xufSk7XG5cbnRlc3QoXCJjaGVja0VuZ2luZUhlYWx0aCByZXBvcnRzIGRiX3VuYXZhaWxhYmxlIHdoZW4gZ3NkLmRiIGV4aXN0cyBidXQgdGhlIERCIGlzIGNsb3NlZFwiLCBhc3luYyAodCkgPT4ge1xuICBjb25zdCBiYXNlID0gbWtkdGVtcFN5bmMoam9pbih0bXBkaXIoKSwgXCJnc2QtZG9jdG9yLWRiLXVuYXZhaWxhYmxlLVwiKSk7XG4gIHQuYWZ0ZXIoKCkgPT4gcm1TeW5jKGJhc2UsIHsgcmVjdXJzaXZlOiB0cnVlLCBmb3JjZTogdHJ1ZSB9KSk7XG5cbiAgY29uc3QgZ3NkRGlyID0gam9pbihiYXNlLCBcIi5nc2RcIik7XG4gIG1rZGlyU3luYyhnc2REaXIsIHsgcmVjdXJzaXZlOiB0cnVlIH0pO1xuICB3cml0ZUZpbGVTeW5jKGpvaW4oZ3NkRGlyLCBcImdzZC5kYlwiKSwgXCJcIik7XG5cbiAgY29uc3QgaXNzdWVzOiBhbnlbXSA9IFtdO1xuICBhd2FpdCBjaGVja0VuZ2luZUhlYWx0aChiYXNlLCBpc3N1ZXMsIFtdKTtcblxuICBjb25zdCBkYklzc3VlID0gaXNzdWVzLmZpbmQoKGlzc3VlKSA9PiBpc3N1ZS5jb2RlID09PSBcImRiX3VuYXZhaWxhYmxlXCIpO1xuICBhc3NlcnQub2soZGJJc3N1ZSwgXCJkb2N0b3Igc2hvdWxkIHN1cmZhY2UgZGVncmFkZWQgREIgbW9kZSB3aGVuIGEgREIgZmlsZSBleGlzdHNcIik7XG4gIGFzc2VydC5lcXVhbChkYklzc3VlLnVuaXRJZCwgXCJwcm9qZWN0XCIpO1xuICBhc3NlcnQuZXF1YWwoZGJJc3N1ZS5maWxlLCBcIi5nc2QvZ3NkLmRiXCIpO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxTQUFTLFdBQVcsWUFBWTtBQUNoQyxPQUFPLFlBQVk7QUFDbkIsU0FBUyxxQkFBcUI7QUFDOUIsU0FBUyxhQUFhLFdBQVcsUUFBUSxxQkFBcUI7QUFDOUQsU0FBUyxZQUFZO0FBQ3JCLFNBQVMsY0FBYztBQUN2QixTQUFTLDBCQUEwQjtBQUNuQyxTQUFTLHlCQUF5QjtBQUVsQyxVQUFVLE1BQU07QUFDZCxnQkFBYztBQUNoQixDQUFDO0FBRUQsS0FBSyw2RUFBNkUsTUFBTTtBQUN0RixRQUFNLFNBQVM7QUFBQSxJQUNiLEVBQUUsVUFBVSxTQUFTLE1BQU0sb0JBQW9CLE9BQU8sV0FBVyxRQUFRLGVBQWUsU0FBUyx3QkFBd0IsU0FBUyxNQUFNO0FBQUEsSUFDeEksRUFBRSxVQUFVLFdBQVcsTUFBTSxrQkFBa0IsT0FBTyxXQUFXLFFBQVEsV0FBVyxTQUFTLGtCQUFrQixTQUFTLE1BQU07QUFBQSxJQUM5SCxFQUFFLFVBQVUsV0FBVyxNQUFNLHNCQUFzQixPQUFPLFNBQVMsUUFBUSxZQUFZLFNBQVMsaUJBQWlCLFNBQVMsTUFBTTtBQUFBLEVBQ2xJO0FBRUEsUUFBTSxXQUFXLG1CQUFtQixDQUFDLEdBQUcsTUFBTSxHQUFHLEVBQUUsT0FBTyxRQUFRLGlCQUFpQixLQUFLLENBQUM7QUFDekYsU0FBTztBQUFBLElBQ0wsU0FBUyxJQUFJLENBQUMsVUFBVSxNQUFNLE1BQU07QUFBQSxJQUNwQyxDQUFDLGVBQWUsV0FBVyxVQUFVO0FBQUEsRUFDdkM7QUFDRixDQUFDO0FBRUQsS0FBSyxvRkFBb0YsT0FBTyxNQUFNO0FBQ3BHLFFBQU0sT0FBTyxZQUFZLEtBQUssT0FBTyxHQUFHLDRCQUE0QixDQUFDO0FBQ3JFLElBQUUsTUFBTSxNQUFNLE9BQU8sTUFBTSxFQUFFLFdBQVcsTUFBTSxPQUFPLEtBQUssQ0FBQyxDQUFDO0FBRTVELFFBQU0sU0FBUyxLQUFLLE1BQU0sTUFBTTtBQUNoQyxZQUFVLFFBQVEsRUFBRSxXQUFXLEtBQUssQ0FBQztBQUNyQyxnQkFBYyxLQUFLLFFBQVEsUUFBUSxHQUFHLEVBQUU7QUFFeEMsUUFBTSxTQUFnQixDQUFDO0FBQ3ZCLFFBQU0sa0JBQWtCLE1BQU0sUUFBUSxDQUFDLENBQUM7QUFFeEMsUUFBTSxVQUFVLE9BQU8sS0FBSyxDQUFDLFVBQVUsTUFBTSxTQUFTLGdCQUFnQjtBQUN0RSxTQUFPLEdBQUcsU0FBUyw4REFBOEQ7QUFDakYsU0FBTyxNQUFNLFFBQVEsUUFBUSxTQUFTO0FBQ3RDLFNBQU8sTUFBTSxRQUFRLE1BQU0sYUFBYTtBQUMxQyxDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

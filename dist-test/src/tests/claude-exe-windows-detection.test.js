@@ -1,0 +1,21 @@
+import test, { describe } from "node:test";
+import assert from "node:assert/strict";
+import { getClaudeCommandCandidates as cliCandidates } from "../claude-cli-check.js";
+import { getClaudeCommandCandidates as readinessCandidates } from "../resources/extensions/claude-code-cli/readiness.js";
+describe("readiness.ts Windows claude.exe candidate (#4548)", () => {
+  test("probes claude.cmd, claude.exe, and bare claude on win32", () => {
+    assert.deepEqual(readinessCandidates("win32"), ["claude.cmd", "claude.exe", "claude"]);
+  });
+  test("probes only bare claude outside win32", () => {
+    assert.deepEqual(readinessCandidates("linux"), ["claude"]);
+  });
+});
+describe("claude-cli-check.ts Windows claude.exe candidate (#4548)", () => {
+  test("probes claude.cmd, claude.exe, and bare claude on win32", () => {
+    assert.deepEqual(cliCandidates("win32"), ["claude.cmd", "claude.exe", "claude"]);
+  });
+  test("probes only bare claude outside win32", () => {
+    assert.deepEqual(cliCandidates("darwin"), ["claude"]);
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL2NsYXVkZS1leGUtd2luZG93cy1kZXRlY3Rpb24udGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHRlc3QsIHsgZGVzY3JpYmUgfSBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcbmltcG9ydCB7IGdldENsYXVkZUNvbW1hbmRDYW5kaWRhdGVzIGFzIGNsaUNhbmRpZGF0ZXMgfSBmcm9tIFwiLi4vY2xhdWRlLWNsaS1jaGVjay50c1wiO1xuaW1wb3J0IHsgZ2V0Q2xhdWRlQ29tbWFuZENhbmRpZGF0ZXMgYXMgcmVhZGluZXNzQ2FuZGlkYXRlcyB9IGZyb20gXCIuLi9yZXNvdXJjZXMvZXh0ZW5zaW9ucy9jbGF1ZGUtY29kZS1jbGkvcmVhZGluZXNzLnRzXCI7XG5cbmRlc2NyaWJlKFwicmVhZGluZXNzLnRzIFdpbmRvd3MgY2xhdWRlLmV4ZSBjYW5kaWRhdGUgKCM0NTQ4KVwiLCAoKSA9PiB7XG5cdHRlc3QoXCJwcm9iZXMgY2xhdWRlLmNtZCwgY2xhdWRlLmV4ZSwgYW5kIGJhcmUgY2xhdWRlIG9uIHdpbjMyXCIsICgpID0+IHtcblx0XHRhc3NlcnQuZGVlcEVxdWFsKHJlYWRpbmVzc0NhbmRpZGF0ZXMoXCJ3aW4zMlwiKSwgW1wiY2xhdWRlLmNtZFwiLCBcImNsYXVkZS5leGVcIiwgXCJjbGF1ZGVcIl0pO1xuXHR9KTtcblxuXHR0ZXN0KFwicHJvYmVzIG9ubHkgYmFyZSBjbGF1ZGUgb3V0c2lkZSB3aW4zMlwiLCAoKSA9PiB7XG5cdFx0YXNzZXJ0LmRlZXBFcXVhbChyZWFkaW5lc3NDYW5kaWRhdGVzKFwibGludXhcIiksIFtcImNsYXVkZVwiXSk7XG5cdH0pO1xufSk7XG5cbmRlc2NyaWJlKFwiY2xhdWRlLWNsaS1jaGVjay50cyBXaW5kb3dzIGNsYXVkZS5leGUgY2FuZGlkYXRlICgjNDU0OClcIiwgKCkgPT4ge1xuXHR0ZXN0KFwicHJvYmVzIGNsYXVkZS5jbWQsIGNsYXVkZS5leGUsIGFuZCBiYXJlIGNsYXVkZSBvbiB3aW4zMlwiLCAoKSA9PiB7XG5cdFx0YXNzZXJ0LmRlZXBFcXVhbChjbGlDYW5kaWRhdGVzKFwid2luMzJcIiksIFtcImNsYXVkZS5jbWRcIiwgXCJjbGF1ZGUuZXhlXCIsIFwiY2xhdWRlXCJdKTtcblx0fSk7XG5cblx0dGVzdChcInByb2JlcyBvbmx5IGJhcmUgY2xhdWRlIG91dHNpZGUgd2luMzJcIiwgKCkgPT4ge1xuXHRcdGFzc2VydC5kZWVwRXF1YWwoY2xpQ2FuZGlkYXRlcyhcImRhcndpblwiKSwgW1wiY2xhdWRlXCJdKTtcblx0fSk7XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sUUFBUSxnQkFBZ0I7QUFDL0IsT0FBTyxZQUFZO0FBQ25CLFNBQVMsOEJBQThCLHFCQUFxQjtBQUM1RCxTQUFTLDhCQUE4QiwyQkFBMkI7QUFFbEUsU0FBUyxxREFBcUQsTUFBTTtBQUNuRSxPQUFLLDJEQUEyRCxNQUFNO0FBQ3JFLFdBQU8sVUFBVSxvQkFBb0IsT0FBTyxHQUFHLENBQUMsY0FBYyxjQUFjLFFBQVEsQ0FBQztBQUFBLEVBQ3RGLENBQUM7QUFFRCxPQUFLLHlDQUF5QyxNQUFNO0FBQ25ELFdBQU8sVUFBVSxvQkFBb0IsT0FBTyxHQUFHLENBQUMsUUFBUSxDQUFDO0FBQUEsRUFDMUQsQ0FBQztBQUNGLENBQUM7QUFFRCxTQUFTLDREQUE0RCxNQUFNO0FBQzFFLE9BQUssMkRBQTJELE1BQU07QUFDckUsV0FBTyxVQUFVLGNBQWMsT0FBTyxHQUFHLENBQUMsY0FBYyxjQUFjLFFBQVEsQ0FBQztBQUFBLEVBQ2hGLENBQUM7QUFFRCxPQUFLLHlDQUF5QyxNQUFNO0FBQ25ELFdBQU8sVUFBVSxjQUFjLFFBQVEsR0FBRyxDQUFDLFFBQVEsQ0FBQztBQUFBLEVBQ3JELENBQUM7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

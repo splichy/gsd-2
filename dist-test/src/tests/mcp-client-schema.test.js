@@ -1,0 +1,20 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { Type } from "@sinclair/typebox";
+test("mcp_call args schema uses additionalProperties instead of patternProperties", () => {
+  const schema = Type.Object({
+    server: Type.String(),
+    tool: Type.String(),
+    args: Type.Optional(
+      Type.Object({}, {
+        additionalProperties: true,
+        description: "Tool arguments as key-value pairs matching the tool's input schema"
+      })
+    )
+  });
+  const argsSchema = schema.properties.args;
+  assert.equal(argsSchema.type, "object");
+  assert.equal(argsSchema.additionalProperties, true);
+  assert.ok(!("patternProperties" in argsSchema));
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL21jcC1jbGllbnQtc2NoZW1hLnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImltcG9ydCB0ZXN0IGZyb20gXCJub2RlOnRlc3RcIjtcbmltcG9ydCBhc3NlcnQgZnJvbSBcIm5vZGU6YXNzZXJ0L3N0cmljdFwiO1xuaW1wb3J0IHsgVHlwZSB9IGZyb20gXCJAc2luY2xhaXIvdHlwZWJveFwiO1xuXG50ZXN0KFwibWNwX2NhbGwgYXJncyBzY2hlbWEgdXNlcyBhZGRpdGlvbmFsUHJvcGVydGllcyBpbnN0ZWFkIG9mIHBhdHRlcm5Qcm9wZXJ0aWVzXCIsICgpID0+IHtcbiAgY29uc3Qgc2NoZW1hID0gVHlwZS5PYmplY3Qoe1xuICAgIHNlcnZlcjogVHlwZS5TdHJpbmcoKSxcbiAgICB0b29sOiBUeXBlLlN0cmluZygpLFxuICAgIGFyZ3M6IFR5cGUuT3B0aW9uYWwoXG4gICAgICBUeXBlLk9iamVjdCh7fSwge1xuICAgICAgICBhZGRpdGlvbmFsUHJvcGVydGllczogdHJ1ZSxcbiAgICAgICAgZGVzY3JpcHRpb246IFwiVG9vbCBhcmd1bWVudHMgYXMga2V5LXZhbHVlIHBhaXJzIG1hdGNoaW5nIHRoZSB0b29sJ3MgaW5wdXQgc2NoZW1hXCIsXG4gICAgICB9KSxcbiAgICApLFxuICB9KTtcblxuICBjb25zdCBhcmdzU2NoZW1hID0gKHNjaGVtYS5wcm9wZXJ0aWVzIGFzIGFueSkuYXJncztcbiAgYXNzZXJ0LmVxdWFsKGFyZ3NTY2hlbWEudHlwZSwgXCJvYmplY3RcIik7XG4gIGFzc2VydC5lcXVhbChhcmdzU2NoZW1hLmFkZGl0aW9uYWxQcm9wZXJ0aWVzLCB0cnVlKTtcbiAgYXNzZXJ0Lm9rKCEoXCJwYXR0ZXJuUHJvcGVydGllc1wiIGluIGFyZ3NTY2hlbWEpKTtcbn0pO1xuIl0sCiAgIm1hcHBpbmdzIjogIkFBQUEsT0FBTyxVQUFVO0FBQ2pCLE9BQU8sWUFBWTtBQUNuQixTQUFTLFlBQVk7QUFFckIsS0FBSywrRUFBK0UsTUFBTTtBQUN4RixRQUFNLFNBQVMsS0FBSyxPQUFPO0FBQUEsSUFDekIsUUFBUSxLQUFLLE9BQU87QUFBQSxJQUNwQixNQUFNLEtBQUssT0FBTztBQUFBLElBQ2xCLE1BQU0sS0FBSztBQUFBLE1BQ1QsS0FBSyxPQUFPLENBQUMsR0FBRztBQUFBLFFBQ2Qsc0JBQXNCO0FBQUEsUUFDdEIsYUFBYTtBQUFBLE1BQ2YsQ0FBQztBQUFBLElBQ0g7QUFBQSxFQUNGLENBQUM7QUFFRCxRQUFNLGFBQWMsT0FBTyxXQUFtQjtBQUM5QyxTQUFPLE1BQU0sV0FBVyxNQUFNLFFBQVE7QUFDdEMsU0FBTyxNQUFNLFdBQVcsc0JBQXNCLElBQUk7QUFDbEQsU0FBTyxHQUFHLEVBQUUsdUJBQXVCLFdBQVc7QUFDaEQsQ0FBQzsiLAogICJuYW1lcyI6IFtdCn0K

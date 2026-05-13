@@ -1,0 +1,17 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { loadPrompt } from "../prompt-loader.js";
+test("loadPrompt normalizes workingDirectory backslashes for bash-friendly prompts (#4048)", () => {
+  const prompt = loadPrompt("research-milestone", {
+    milestoneId: "M001",
+    milestoneTitle: "Windows path fix",
+    workingDirectory: "C:\\Dev\\NB\\TR",
+    inlinedContext: "context",
+    skillActivation: "skill activation",
+    skillDiscoveryMode: "off",
+    skillDiscoveryInstructions: " disabled"
+  });
+  assert.match(prompt, /Your working directory is `C:\/Dev\/NB\/TR`/);
+  assert.doesNotMatch(prompt, /C:\\Dev\\NB\\TR/);
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9wcm9tcHQtbG9hZGVyLXdvcmtpbmctZGlyZWN0b3J5LnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImltcG9ydCB0ZXN0IGZyb20gXCJub2RlOnRlc3RcIjtcbmltcG9ydCBhc3NlcnQgZnJvbSBcIm5vZGU6YXNzZXJ0L3N0cmljdFwiO1xuXG5pbXBvcnQgeyBsb2FkUHJvbXB0IH0gZnJvbSBcIi4uL3Byb21wdC1sb2FkZXIudHNcIjtcblxudGVzdChcImxvYWRQcm9tcHQgbm9ybWFsaXplcyB3b3JraW5nRGlyZWN0b3J5IGJhY2tzbGFzaGVzIGZvciBiYXNoLWZyaWVuZGx5IHByb21wdHMgKCM0MDQ4KVwiLCAoKSA9PiB7XG4gIGNvbnN0IHByb21wdCA9IGxvYWRQcm9tcHQoXCJyZXNlYXJjaC1taWxlc3RvbmVcIiwge1xuICAgIG1pbGVzdG9uZUlkOiBcIk0wMDFcIixcbiAgICBtaWxlc3RvbmVUaXRsZTogXCJXaW5kb3dzIHBhdGggZml4XCIsXG4gICAgd29ya2luZ0RpcmVjdG9yeTogXCJDOlxcXFxEZXZcXFxcTkJcXFxcVFJcIixcbiAgICBpbmxpbmVkQ29udGV4dDogXCJjb250ZXh0XCIsXG4gICAgc2tpbGxBY3RpdmF0aW9uOiBcInNraWxsIGFjdGl2YXRpb25cIixcbiAgICBza2lsbERpc2NvdmVyeU1vZGU6IFwib2ZmXCIsXG4gICAgc2tpbGxEaXNjb3ZlcnlJbnN0cnVjdGlvbnM6IFwiIGRpc2FibGVkXCIsXG4gIH0pO1xuXG4gIGFzc2VydC5tYXRjaChwcm9tcHQsIC9Zb3VyIHdvcmtpbmcgZGlyZWN0b3J5IGlzIGBDOlxcL0RldlxcL05CXFwvVFJgLyk7XG4gIGFzc2VydC5kb2VzTm90TWF0Y2gocHJvbXB0LCAvQzpcXFxcRGV2XFxcXE5CXFxcXFRSLyk7XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFFbkIsU0FBUyxrQkFBa0I7QUFFM0IsS0FBSyx3RkFBd0YsTUFBTTtBQUNqRyxRQUFNLFNBQVMsV0FBVyxzQkFBc0I7QUFBQSxJQUM5QyxhQUFhO0FBQUEsSUFDYixnQkFBZ0I7QUFBQSxJQUNoQixrQkFBa0I7QUFBQSxJQUNsQixnQkFBZ0I7QUFBQSxJQUNoQixpQkFBaUI7QUFBQSxJQUNqQixvQkFBb0I7QUFBQSxJQUNwQiw0QkFBNEI7QUFBQSxFQUM5QixDQUFDO0FBRUQsU0FBTyxNQUFNLFFBQVEsNkNBQTZDO0FBQ2xFLFNBQU8sYUFBYSxRQUFRLGlCQUFpQjtBQUMvQyxDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

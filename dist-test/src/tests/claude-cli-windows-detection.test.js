@@ -1,0 +1,32 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  buildClaudeSpawnInvocation as buildCliSpawnInvocation,
+  getClaudeCommand as getCliCommand
+} from "../claude-cli-check.js";
+import {
+  buildClaudeSpawnInvocation as buildReadinessSpawnInvocation,
+  getClaudeCommand as getReadinessCommand
+} from "../resources/extensions/claude-code-cli/readiness.js";
+test("claude-cli-check selects claude.cmd and uses cmd /c on win32", () => {
+  assert.equal(getCliCommand("win32"), "claude.cmd");
+  assert.deepEqual(buildCliSpawnInvocation("claude.cmd", ["--version"], "win32"), {
+    command: "cmd",
+    args: ["/c", "claude.cmd", "--version"]
+  });
+});
+test("readiness selects claude.cmd and uses cmd /c on win32", () => {
+  assert.equal(getReadinessCommand("win32"), "claude.cmd");
+  assert.deepEqual(buildReadinessSpawnInvocation("claude.cmd", ["--version"], "win32"), {
+    command: "cmd",
+    args: ["/c", "claude.cmd", "--version"]
+  });
+});
+test("non-Windows probes invoke claude directly", () => {
+  assert.equal(getCliCommand("darwin"), "claude");
+  assert.deepEqual(buildReadinessSpawnInvocation("claude", ["auth", "status"], "darwin"), {
+    command: "claude",
+    args: ["auth", "status"]
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL2NsYXVkZS1jbGktd2luZG93cy1kZXRlY3Rpb24udGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHRlc3QgZnJvbSBcIm5vZGU6dGVzdFwiO1xuaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5pbXBvcnQge1xuXHRidWlsZENsYXVkZVNwYXduSW52b2NhdGlvbiBhcyBidWlsZENsaVNwYXduSW52b2NhdGlvbixcblx0Z2V0Q2xhdWRlQ29tbWFuZCBhcyBnZXRDbGlDb21tYW5kLFxufSBmcm9tIFwiLi4vY2xhdWRlLWNsaS1jaGVjay50c1wiO1xuaW1wb3J0IHtcblx0YnVpbGRDbGF1ZGVTcGF3bkludm9jYXRpb24gYXMgYnVpbGRSZWFkaW5lc3NTcGF3bkludm9jYXRpb24sXG5cdGdldENsYXVkZUNvbW1hbmQgYXMgZ2V0UmVhZGluZXNzQ29tbWFuZCxcbn0gZnJvbSBcIi4uL3Jlc291cmNlcy9leHRlbnNpb25zL2NsYXVkZS1jb2RlLWNsaS9yZWFkaW5lc3MudHNcIjtcblxudGVzdChcImNsYXVkZS1jbGktY2hlY2sgc2VsZWN0cyBjbGF1ZGUuY21kIGFuZCB1c2VzIGNtZCAvYyBvbiB3aW4zMlwiLCAoKSA9PiB7XG5cdGFzc2VydC5lcXVhbChnZXRDbGlDb21tYW5kKFwid2luMzJcIiksIFwiY2xhdWRlLmNtZFwiKTtcblx0YXNzZXJ0LmRlZXBFcXVhbChidWlsZENsaVNwYXduSW52b2NhdGlvbihcImNsYXVkZS5jbWRcIiwgW1wiLS12ZXJzaW9uXCJdLCBcIndpbjMyXCIpLCB7XG5cdFx0Y29tbWFuZDogXCJjbWRcIixcblx0XHRhcmdzOiBbXCIvY1wiLCBcImNsYXVkZS5jbWRcIiwgXCItLXZlcnNpb25cIl0sXG5cdH0pO1xufSk7XG5cbnRlc3QoXCJyZWFkaW5lc3Mgc2VsZWN0cyBjbGF1ZGUuY21kIGFuZCB1c2VzIGNtZCAvYyBvbiB3aW4zMlwiLCAoKSA9PiB7XG5cdGFzc2VydC5lcXVhbChnZXRSZWFkaW5lc3NDb21tYW5kKFwid2luMzJcIiksIFwiY2xhdWRlLmNtZFwiKTtcblx0YXNzZXJ0LmRlZXBFcXVhbChidWlsZFJlYWRpbmVzc1NwYXduSW52b2NhdGlvbihcImNsYXVkZS5jbWRcIiwgW1wiLS12ZXJzaW9uXCJdLCBcIndpbjMyXCIpLCB7XG5cdFx0Y29tbWFuZDogXCJjbWRcIixcblx0XHRhcmdzOiBbXCIvY1wiLCBcImNsYXVkZS5jbWRcIiwgXCItLXZlcnNpb25cIl0sXG5cdH0pO1xufSk7XG5cbnRlc3QoXCJub24tV2luZG93cyBwcm9iZXMgaW52b2tlIGNsYXVkZSBkaXJlY3RseVwiLCAoKSA9PiB7XG5cdGFzc2VydC5lcXVhbChnZXRDbGlDb21tYW5kKFwiZGFyd2luXCIpLCBcImNsYXVkZVwiKTtcblx0YXNzZXJ0LmRlZXBFcXVhbChidWlsZFJlYWRpbmVzc1NwYXduSW52b2NhdGlvbihcImNsYXVkZVwiLCBbXCJhdXRoXCIsIFwic3RhdHVzXCJdLCBcImRhcndpblwiKSwge1xuXHRcdGNvbW1hbmQ6IFwiY2xhdWRlXCIsXG5cdFx0YXJnczogW1wiYXV0aFwiLCBcInN0YXR1c1wiXSxcblx0fSk7XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFDbkI7QUFBQSxFQUNDLDhCQUE4QjtBQUFBLEVBQzlCLG9CQUFvQjtBQUFBLE9BQ2Q7QUFDUDtBQUFBLEVBQ0MsOEJBQThCO0FBQUEsRUFDOUIsb0JBQW9CO0FBQUEsT0FDZDtBQUVQLEtBQUssZ0VBQWdFLE1BQU07QUFDMUUsU0FBTyxNQUFNLGNBQWMsT0FBTyxHQUFHLFlBQVk7QUFDakQsU0FBTyxVQUFVLHdCQUF3QixjQUFjLENBQUMsV0FBVyxHQUFHLE9BQU8sR0FBRztBQUFBLElBQy9FLFNBQVM7QUFBQSxJQUNULE1BQU0sQ0FBQyxNQUFNLGNBQWMsV0FBVztBQUFBLEVBQ3ZDLENBQUM7QUFDRixDQUFDO0FBRUQsS0FBSyx5REFBeUQsTUFBTTtBQUNuRSxTQUFPLE1BQU0sb0JBQW9CLE9BQU8sR0FBRyxZQUFZO0FBQ3ZELFNBQU8sVUFBVSw4QkFBOEIsY0FBYyxDQUFDLFdBQVcsR0FBRyxPQUFPLEdBQUc7QUFBQSxJQUNyRixTQUFTO0FBQUEsSUFDVCxNQUFNLENBQUMsTUFBTSxjQUFjLFdBQVc7QUFBQSxFQUN2QyxDQUFDO0FBQ0YsQ0FBQztBQUVELEtBQUssNkNBQTZDLE1BQU07QUFDdkQsU0FBTyxNQUFNLGNBQWMsUUFBUSxHQUFHLFFBQVE7QUFDOUMsU0FBTyxVQUFVLDhCQUE4QixVQUFVLENBQUMsUUFBUSxRQUFRLEdBQUcsUUFBUSxHQUFHO0FBQUEsSUFDdkYsU0FBUztBQUFBLElBQ1QsTUFBTSxDQUFDLFFBQVEsUUFBUTtBQUFBLEVBQ3hCLENBQUM7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

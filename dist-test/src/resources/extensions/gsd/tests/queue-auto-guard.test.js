@@ -1,0 +1,27 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { _setAutoActiveForTest } from "../auto.js";
+import { handleWorkflowCommand } from "../commands/handlers/workflow.js";
+describe("/gsd queue auto-mode guard (#4704)", () => {
+  it("returns handled and notifies when auto-mode is active", async () => {
+    const notifications = [];
+    _setAutoActiveForTest(true);
+    try {
+      const handled = await handleWorkflowCommand("queue", {
+        ui: {
+          notify(message, level) {
+            notifications.push({ message, level });
+          }
+        }
+      }, {});
+      assert.equal(handled, true);
+      assert.deepEqual(notifications, [{
+        message: "/gsd queue cannot run while auto-mode is active.\nStop auto-mode first with /gsd stop, then run /gsd queue.",
+        level: "error"
+      }]);
+    } finally {
+      _setAutoActiveForTest(false);
+    }
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9xdWV1ZS1hdXRvLWd1YXJkLnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbIi8qKlxuICogVGVzdHMgdGhhdCAvZ3NkIHF1ZXVlIGlzIGJsb2NrZWQgd2hlbiBhdXRvLW1vZGUgaXMgYWN0aXZlLlxuICpcbiAqIFJlbGF0ZXMgdG8gIzQ3MDQ6IC9nc2QgcXVldWUgd3JpdGVzIC5nc2QvUFJPSkVDVC5tZCArIFFVRVVFLU9SREVSLmpzb25cbiAqIGRpcmVjdGx5IGludG8gdGhlIHByb2plY3Qtcm9vdCB3b3JrdHJlZSwgcmFjaW5nIHdpdGggYXV0by1tb2RlJ3NcbiAqIHByZS1tZXJnZSBkaXJ0eS10cmVlIGNoZWNrIGFuZCBjYXVzaW5nIF9fZGlydHlfd29ya2luZ190cmVlX18gZmFpbHVyZXMuXG4gKlxuICogVGhlIGZpeCBhZGRzIGFuIGlzQXV0b0FjdGl2ZSgpIGd1YXJkIGluIGhhbmRsZVdvcmtmbG93Q29tbWFuZCBiZWZvcmVcbiAqIGRlbGVnYXRpbmcgdG8gc2hvd1F1ZXVlLCBtaXJyb3JpbmcgdGhlIGV4aXN0aW5nIC9nc2QgcXVpY2sgZ3VhcmQgKCMyNDE3KS5cbiAqL1xuXG5pbXBvcnQgeyBkZXNjcmliZSwgaXQgfSBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcbmltcG9ydCB7IF9zZXRBdXRvQWN0aXZlRm9yVGVzdCB9IGZyb20gXCIuLi9hdXRvLnRzXCI7XG5pbXBvcnQgeyBoYW5kbGVXb3JrZmxvd0NvbW1hbmQgfSBmcm9tIFwiLi4vY29tbWFuZHMvaGFuZGxlcnMvd29ya2Zsb3cudHNcIjtcblxuZGVzY3JpYmUoXCIvZ3NkIHF1ZXVlIGF1dG8tbW9kZSBndWFyZCAoIzQ3MDQpXCIsICgpID0+IHtcbiAgaXQoXCJyZXR1cm5zIGhhbmRsZWQgYW5kIG5vdGlmaWVzIHdoZW4gYXV0by1tb2RlIGlzIGFjdGl2ZVwiLCBhc3luYyAoKSA9PiB7XG4gICAgY29uc3Qgbm90aWZpY2F0aW9uczogQXJyYXk8eyBtZXNzYWdlOiBzdHJpbmc7IGxldmVsPzogc3RyaW5nIH0+ID0gW107XG4gICAgX3NldEF1dG9BY3RpdmVGb3JUZXN0KHRydWUpO1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBoYW5kbGVkID0gYXdhaXQgaGFuZGxlV29ya2Zsb3dDb21tYW5kKFwicXVldWVcIiwge1xuICAgICAgICB1aToge1xuICAgICAgICAgIG5vdGlmeShtZXNzYWdlOiBzdHJpbmcsIGxldmVsPzogc3RyaW5nKSB7XG4gICAgICAgICAgICBub3RpZmljYXRpb25zLnB1c2goeyBtZXNzYWdlLCBsZXZlbCB9KTtcbiAgICAgICAgICB9LFxuICAgICAgICB9LFxuICAgICAgfSBhcyBhbnksIHt9IGFzIGFueSk7XG5cbiAgICAgIGFzc2VydC5lcXVhbChoYW5kbGVkLCB0cnVlKTtcbiAgICAgIGFzc2VydC5kZWVwRXF1YWwobm90aWZpY2F0aW9ucywgW3tcbiAgICAgICAgbWVzc2FnZTogXCIvZ3NkIHF1ZXVlIGNhbm5vdCBydW4gd2hpbGUgYXV0by1tb2RlIGlzIGFjdGl2ZS5cXG5TdG9wIGF1dG8tbW9kZSBmaXJzdCB3aXRoIC9nc2Qgc3RvcCwgdGhlbiBydW4gL2dzZCBxdWV1ZS5cIixcbiAgICAgICAgbGV2ZWw6IFwiZXJyb3JcIixcbiAgICAgIH1dKTtcbiAgICB9IGZpbmFsbHkge1xuICAgICAgX3NldEF1dG9BY3RpdmVGb3JUZXN0KGZhbHNlKTtcbiAgICB9XG4gIH0pO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFXQSxTQUFTLFVBQVUsVUFBVTtBQUM3QixPQUFPLFlBQVk7QUFDbkIsU0FBUyw2QkFBNkI7QUFDdEMsU0FBUyw2QkFBNkI7QUFFdEMsU0FBUyxzQ0FBc0MsTUFBTTtBQUNuRCxLQUFHLHlEQUF5RCxZQUFZO0FBQ3RFLFVBQU0sZ0JBQTRELENBQUM7QUFDbkUsMEJBQXNCLElBQUk7QUFDMUIsUUFBSTtBQUNGLFlBQU0sVUFBVSxNQUFNLHNCQUFzQixTQUFTO0FBQUEsUUFDbkQsSUFBSTtBQUFBLFVBQ0YsT0FBTyxTQUFpQixPQUFnQjtBQUN0QywwQkFBYyxLQUFLLEVBQUUsU0FBUyxNQUFNLENBQUM7QUFBQSxVQUN2QztBQUFBLFFBQ0Y7QUFBQSxNQUNGLEdBQVUsQ0FBQyxDQUFRO0FBRW5CLGFBQU8sTUFBTSxTQUFTLElBQUk7QUFDMUIsYUFBTyxVQUFVLGVBQWUsQ0FBQztBQUFBLFFBQy9CLFNBQVM7QUFBQSxRQUNULE9BQU87QUFBQSxNQUNULENBQUMsQ0FBQztBQUFBLElBQ0osVUFBRTtBQUNBLDRCQUFzQixLQUFLO0FBQUEsSUFDN0I7QUFBQSxFQUNGLENBQUM7QUFDSCxDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

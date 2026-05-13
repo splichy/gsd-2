@@ -1,0 +1,10 @@
+import { join } from "node:path";
+import { sessionsDir as defaultSessionsDir } from "./app-paths.js";
+function getProjectSessionsDir(cwd, baseSessionsDir = defaultSessionsDir) {
+  const safePath = `--${cwd.replace(/^[/\\]/, "").replace(/[/\\:]/g, "-")}--`;
+  return join(baseSessionsDir, safePath);
+}
+export {
+  getProjectSessionsDir
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vc3JjL3Byb2plY3Qtc2Vzc2lvbnMudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImltcG9ydCB7IGpvaW4gfSBmcm9tIFwibm9kZTpwYXRoXCJcblxuaW1wb3J0IHsgc2Vzc2lvbnNEaXIgYXMgZGVmYXVsdFNlc3Npb25zRGlyIH0gZnJvbSBcIi4vYXBwLXBhdGhzLmpzXCJcblxuZXhwb3J0IGZ1bmN0aW9uIGdldFByb2plY3RTZXNzaW9uc0Rpcihjd2Q6IHN0cmluZywgYmFzZVNlc3Npb25zRGlyID0gZGVmYXVsdFNlc3Npb25zRGlyKTogc3RyaW5nIHtcbiAgY29uc3Qgc2FmZVBhdGggPSBgLS0ke2N3ZC5yZXBsYWNlKC9eWy9cXFxcXS8sIFwiXCIpLnJlcGxhY2UoL1svXFxcXDpdL2csIFwiLVwiKX0tLWBcbiAgcmV0dXJuIGpvaW4oYmFzZVNlc3Npb25zRGlyLCBzYWZlUGF0aClcbn1cbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLFNBQVMsWUFBWTtBQUVyQixTQUFTLGVBQWUsMEJBQTBCO0FBRTNDLFNBQVMsc0JBQXNCLEtBQWEsa0JBQWtCLG9CQUE0QjtBQUMvRixRQUFNLFdBQVcsS0FBSyxJQUFJLFFBQVEsVUFBVSxFQUFFLEVBQUUsUUFBUSxXQUFXLEdBQUcsQ0FBQztBQUN2RSxTQUFPLEtBQUssaUJBQWlCLFFBQVE7QUFDdkM7IiwKICAibmFtZXMiOiBbXQp9Cg==

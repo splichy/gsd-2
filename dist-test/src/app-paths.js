@@ -1,0 +1,17 @@
+import { homedir } from "os";
+import { join } from "path";
+const appRoot = process.env.GSD_HOME || join(homedir(), ".gsd");
+const agentDir = join(appRoot, "agent");
+const sessionsDir = join(appRoot, "sessions");
+const authFilePath = join(agentDir, "auth.json");
+const webPidFilePath = join(appRoot, "web-server.pid");
+const webPreferencesPath = join(appRoot, "web-preferences.json");
+export {
+  agentDir,
+  appRoot,
+  authFilePath,
+  sessionsDir,
+  webPidFilePath,
+  webPreferencesPath
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vc3JjL2FwcC1wYXRocy50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHsgaG9tZWRpciB9IGZyb20gJ29zJ1xuaW1wb3J0IHsgam9pbiB9IGZyb20gJ3BhdGgnXG5cbmV4cG9ydCBjb25zdCBhcHBSb290ID0gcHJvY2Vzcy5lbnYuR1NEX0hPTUUgfHwgam9pbihob21lZGlyKCksICcuZ3NkJylcbmV4cG9ydCBjb25zdCBhZ2VudERpciA9IGpvaW4oYXBwUm9vdCwgJ2FnZW50JylcbmV4cG9ydCBjb25zdCBzZXNzaW9uc0RpciA9IGpvaW4oYXBwUm9vdCwgJ3Nlc3Npb25zJylcbmV4cG9ydCBjb25zdCBhdXRoRmlsZVBhdGggPSBqb2luKGFnZW50RGlyLCAnYXV0aC5qc29uJylcbmV4cG9ydCBjb25zdCB3ZWJQaWRGaWxlUGF0aCA9IGpvaW4oYXBwUm9vdCwgJ3dlYi1zZXJ2ZXIucGlkJylcbmV4cG9ydCBjb25zdCB3ZWJQcmVmZXJlbmNlc1BhdGggPSBqb2luKGFwcFJvb3QsICd3ZWItcHJlZmVyZW5jZXMuanNvbicpXG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxTQUFTLGVBQWU7QUFDeEIsU0FBUyxZQUFZO0FBRWQsTUFBTSxVQUFVLFFBQVEsSUFBSSxZQUFZLEtBQUssUUFBUSxHQUFHLE1BQU07QUFDOUQsTUFBTSxXQUFXLEtBQUssU0FBUyxPQUFPO0FBQ3RDLE1BQU0sY0FBYyxLQUFLLFNBQVMsVUFBVTtBQUM1QyxNQUFNLGVBQWUsS0FBSyxVQUFVLFdBQVc7QUFDL0MsTUFBTSxpQkFBaUIsS0FBSyxTQUFTLGdCQUFnQjtBQUNyRCxNQUFNLHFCQUFxQixLQUFLLFNBQVMsc0JBQXNCOyIsCiAgIm5hbWVzIjogW10KfQo=

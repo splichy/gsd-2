@@ -1,0 +1,76 @@
+import { MAX_EVENTS, INIT_TIMEOUT_MS } from "./types.js";
+import { resolveConfigPath, loadConfig, validateConfig } from "./config.js";
+import { Logger } from "./logger.js";
+import { Daemon } from "./daemon.js";
+import { scanForProjects } from "./project-scanner.js";
+import { SessionManager } from "./session-manager.js";
+import { DiscordBot, isAuthorized, validateDiscordConfig } from "./discord-bot.js";
+import { ChannelManager, sanitizeChannelName } from "./channel-manager.js";
+import { buildCommands, formatSessionStatus, registerGuildCommands } from "./commands.js";
+import { EventBridge } from "./event-bridge.js";
+import { Orchestrator } from "./orchestrator.js";
+import { MessageBatcher } from "./message-batcher.js";
+import { VerbosityManager, shouldShowAtLevel } from "./verbosity.js";
+import {
+  formatToolStart,
+  formatToolEnd,
+  formatMessage,
+  formatBlocker,
+  formatCompletion,
+  formatError,
+  formatCostUpdate,
+  formatSessionStarted,
+  formatTaskTransition,
+  formatGenericEvent,
+  formatEvent
+} from "./event-formatter.js";
+import {
+  escapeXml,
+  generatePlist,
+  getPlistPath,
+  install,
+  uninstall,
+  status
+} from "./launchd.js";
+export {
+  ChannelManager,
+  Daemon,
+  DiscordBot,
+  EventBridge,
+  INIT_TIMEOUT_MS,
+  Logger,
+  MAX_EVENTS,
+  MessageBatcher,
+  Orchestrator,
+  SessionManager,
+  VerbosityManager,
+  buildCommands,
+  escapeXml,
+  formatBlocker,
+  formatCompletion,
+  formatCostUpdate,
+  formatError,
+  formatEvent,
+  formatGenericEvent,
+  formatMessage,
+  formatSessionStarted,
+  formatSessionStatus,
+  formatTaskTransition,
+  formatToolEnd,
+  formatToolStart,
+  generatePlist,
+  getPlistPath,
+  install as installLaunchAgent,
+  isAuthorized,
+  status as launchAgentStatus,
+  loadConfig,
+  registerGuildCommands,
+  resolveConfigPath,
+  sanitizeChannelName,
+  scanForProjects,
+  shouldShowAtLevel,
+  uninstall as uninstallLaunchAgent,
+  validateConfig,
+  validateDiscordConfig
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vcGFja2FnZXMvZGFlbW9uL3NyYy9pbmRleC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiZXhwb3J0IHR5cGUge1xuICBEYWVtb25Db25maWcsXG4gIExvZ0xldmVsLFxuICBMb2dFbnRyeSxcbiAgU2Vzc2lvblN0YXR1cyxcbiAgTWFuYWdlZFNlc3Npb24sXG4gIFBlbmRpbmdCbG9ja2VyLFxuICBDb3N0QWNjdW11bGF0b3IsXG4gIFByb2plY3RJbmZvLFxuICBQcm9qZWN0TWFya2VyLFxuICBTdGFydFNlc3Npb25PcHRpb25zLFxuICBGb3JtYXR0ZWRFdmVudCxcbiAgVmVyYm9zaXR5TGV2ZWwsXG59IGZyb20gJy4vdHlwZXMuanMnO1xuZXhwb3J0IHsgTUFYX0VWRU5UUywgSU5JVF9USU1FT1VUX01TIH0gZnJvbSAnLi90eXBlcy5qcyc7XG5leHBvcnQgeyByZXNvbHZlQ29uZmlnUGF0aCwgbG9hZENvbmZpZywgdmFsaWRhdGVDb25maWcgfSBmcm9tICcuL2NvbmZpZy5qcyc7XG5leHBvcnQgeyBMb2dnZXIgfSBmcm9tICcuL2xvZ2dlci5qcyc7XG5leHBvcnQgdHlwZSB7IExvZ2dlck9wdGlvbnMgfSBmcm9tICcuL2xvZ2dlci5qcyc7XG5leHBvcnQgeyBEYWVtb24gfSBmcm9tICcuL2RhZW1vbi5qcyc7XG5leHBvcnQgeyBzY2FuRm9yUHJvamVjdHMgfSBmcm9tICcuL3Byb2plY3Qtc2Nhbm5lci5qcyc7XG5leHBvcnQgeyBTZXNzaW9uTWFuYWdlciB9IGZyb20gJy4vc2Vzc2lvbi1tYW5hZ2VyLmpzJztcbmV4cG9ydCB7IERpc2NvcmRCb3QsIGlzQXV0aG9yaXplZCwgdmFsaWRhdGVEaXNjb3JkQ29uZmlnIH0gZnJvbSAnLi9kaXNjb3JkLWJvdC5qcyc7XG5leHBvcnQgdHlwZSB7IERpc2NvcmRCb3RPcHRpb25zIH0gZnJvbSAnLi9kaXNjb3JkLWJvdC5qcyc7XG5leHBvcnQgeyBDaGFubmVsTWFuYWdlciwgc2FuaXRpemVDaGFubmVsTmFtZSB9IGZyb20gJy4vY2hhbm5lbC1tYW5hZ2VyLmpzJztcbmV4cG9ydCB0eXBlIHsgQ2hhbm5lbE1hbmFnZXJPcHRpb25zIH0gZnJvbSAnLi9jaGFubmVsLW1hbmFnZXIuanMnO1xuZXhwb3J0IHsgYnVpbGRDb21tYW5kcywgZm9ybWF0U2Vzc2lvblN0YXR1cywgcmVnaXN0ZXJHdWlsZENvbW1hbmRzIH0gZnJvbSAnLi9jb21tYW5kcy5qcyc7XG5leHBvcnQgeyBFdmVudEJyaWRnZSB9IGZyb20gJy4vZXZlbnQtYnJpZGdlLmpzJztcbmV4cG9ydCB0eXBlIHsgQnJpZGdlQ2xpZW50LCBFdmVudEJyaWRnZU9wdGlvbnMgfSBmcm9tICcuL2V2ZW50LWJyaWRnZS5qcyc7XG5leHBvcnQgeyBPcmNoZXN0cmF0b3IgfSBmcm9tICcuL29yY2hlc3RyYXRvci5qcyc7XG5leHBvcnQgdHlwZSB7IE9yY2hlc3RyYXRvckNvbmZpZywgT3JjaGVzdHJhdG9yRGVwcywgRGlzY29yZE1lc3NhZ2VMaWtlIH0gZnJvbSAnLi9vcmNoZXN0cmF0b3IuanMnO1xuZXhwb3J0IHsgTWVzc2FnZUJhdGNoZXIgfSBmcm9tICcuL21lc3NhZ2UtYmF0Y2hlci5qcyc7XG5leHBvcnQgdHlwZSB7IFNlbmRQYXlsb2FkLCBTZW5kRm4sIEJhdGNoZXJMb2dnZXIsIEJhdGNoZXJPcHRpb25zIH0gZnJvbSAnLi9tZXNzYWdlLWJhdGNoZXIuanMnO1xuZXhwb3J0IHsgVmVyYm9zaXR5TWFuYWdlciwgc2hvdWxkU2hvd0F0TGV2ZWwgfSBmcm9tICcuL3ZlcmJvc2l0eS5qcyc7XG5leHBvcnQge1xuICBmb3JtYXRUb29sU3RhcnQsXG4gIGZvcm1hdFRvb2xFbmQsXG4gIGZvcm1hdE1lc3NhZ2UsXG4gIGZvcm1hdEJsb2NrZXIsXG4gIGZvcm1hdENvbXBsZXRpb24sXG4gIGZvcm1hdEVycm9yLFxuICBmb3JtYXRDb3N0VXBkYXRlLFxuICBmb3JtYXRTZXNzaW9uU3RhcnRlZCxcbiAgZm9ybWF0VGFza1RyYW5zaXRpb24sXG4gIGZvcm1hdEdlbmVyaWNFdmVudCxcbiAgZm9ybWF0RXZlbnQsXG59IGZyb20gJy4vZXZlbnQtZm9ybWF0dGVyLmpzJztcbmV4cG9ydCB7XG4gIGVzY2FwZVhtbCxcbiAgZ2VuZXJhdGVQbGlzdCxcbiAgZ2V0UGxpc3RQYXRoLFxuICBpbnN0YWxsIGFzIGluc3RhbGxMYXVuY2hBZ2VudCxcbiAgdW5pbnN0YWxsIGFzIHVuaW5zdGFsbExhdW5jaEFnZW50LFxuICBzdGF0dXMgYXMgbGF1bmNoQWdlbnRTdGF0dXMsXG59IGZyb20gJy4vbGF1bmNoZC5qcyc7XG5leHBvcnQgdHlwZSB7IFBsaXN0T3B0aW9ucywgTGF1bmNoZFN0YXR1cywgUnVuQ29tbWFuZEZuIH0gZnJvbSAnLi9sYXVuY2hkLmpzJztcbiJdLAogICJtYXBwaW5ncyI6ICJBQWNBLFNBQVMsWUFBWSx1QkFBdUI7QUFDNUMsU0FBUyxtQkFBbUIsWUFBWSxzQkFBc0I7QUFDOUQsU0FBUyxjQUFjO0FBRXZCLFNBQVMsY0FBYztBQUN2QixTQUFTLHVCQUF1QjtBQUNoQyxTQUFTLHNCQUFzQjtBQUMvQixTQUFTLFlBQVksY0FBYyw2QkFBNkI7QUFFaEUsU0FBUyxnQkFBZ0IsMkJBQTJCO0FBRXBELFNBQVMsZUFBZSxxQkFBcUIsNkJBQTZCO0FBQzFFLFNBQVMsbUJBQW1CO0FBRTVCLFNBQVMsb0JBQW9CO0FBRTdCLFNBQVMsc0JBQXNCO0FBRS9CLFNBQVMsa0JBQWtCLHlCQUF5QjtBQUNwRDtBQUFBLEVBQ0U7QUFBQSxFQUNBO0FBQUEsRUFDQTtBQUFBLEVBQ0E7QUFBQSxFQUNBO0FBQUEsRUFDQTtBQUFBLEVBQ0E7QUFBQSxFQUNBO0FBQUEsRUFDQTtBQUFBLEVBQ0E7QUFBQSxFQUNBO0FBQUEsT0FDSztBQUNQO0FBQUEsRUFDRTtBQUFBLEVBQ0E7QUFBQSxFQUNBO0FBQUEsRUFDVztBQUFBLEVBQ0U7QUFBQSxFQUNIO0FBQUEsT0FDTDsiLAogICJuYW1lcyI6IFtdCn0K

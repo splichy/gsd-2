@@ -1,0 +1,49 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const promptsDir = join(__dirname, "..", "prompts");
+function readPrompt(name) {
+  return readFileSync(join(promptsDir, name), "utf-8");
+}
+test("add-tests prompt forbids referencing gitignored paths", () => {
+  const prompt = readPrompt("add-tests.md");
+  assert.match(
+    prompt,
+    /gitignore/i,
+    "add-tests prompt should mention .gitignore to rule out referencing local-only files"
+  );
+  assert.match(prompt, /\.gsd\//, "add-tests prompt should name .gsd/ as off-limits for tests");
+  assert.match(prompt, /\.planning\//, "add-tests prompt should name .planning/ as off-limits for tests");
+  assert.match(prompt, /\.audits\//, "add-tests prompt should name .audits/ as off-limits for tests");
+  assert.match(
+    prompt,
+    /tracked/i,
+    "add-tests prompt should frame the rule in terms of tracked files"
+  );
+});
+test("plan-slice prompt warns against planning tests that depend on gitignored files", () => {
+  const prompt = readPrompt("plan-slice.md");
+  assert.match(
+    prompt,
+    /gitignore/i,
+    "plan-slice prompt should warn against planning tests that depend on .gitignore paths"
+  );
+  assert.match(prompt, /\.gsd\//, "plan-slice prompt should name .gsd/ as off-limits for planned tests");
+  assert.match(prompt, /\.planning\//, "plan-slice prompt should name .planning/ as off-limits for planned tests");
+  assert.match(prompt, /\.audits\//, "plan-slice prompt should name .audits/ as off-limits for planned tests");
+});
+test("execute-task prompt forbids tests that reference gitignored paths", () => {
+  const prompt = readPrompt("execute-task.md");
+  assert.match(
+    prompt,
+    /gitignore/i,
+    "execute-task prompt should forbid referencing gitignored paths from tests"
+  );
+  assert.match(prompt, /\.gsd\//, "execute-task prompt should name .gsd/ as off-limits for tests");
+  assert.match(prompt, /\.planning\//, "execute-task prompt should name .planning/ as off-limits for tests");
+  assert.match(prompt, /\.audits\//, "execute-task prompt should name .audits/ as off-limits for tests");
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9wcm9tcHRzLW5vLWdpdGlnbm9yZWQtdGVzdC1yZWZzLnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImltcG9ydCB0ZXN0IGZyb20gXCJub2RlOnRlc3RcIjtcbmltcG9ydCBhc3NlcnQgZnJvbSBcIm5vZGU6YXNzZXJ0L3N0cmljdFwiO1xuaW1wb3J0IHsgcmVhZEZpbGVTeW5jIH0gZnJvbSBcIm5vZGU6ZnNcIjtcbmltcG9ydCB7IGRpcm5hbWUsIGpvaW4gfSBmcm9tIFwibm9kZTpwYXRoXCI7XG5pbXBvcnQgeyBmaWxlVVJMVG9QYXRoIH0gZnJvbSBcIm5vZGU6dXJsXCI7XG5cbmNvbnN0IF9fZGlybmFtZSA9IGRpcm5hbWUoZmlsZVVSTFRvUGF0aChpbXBvcnQubWV0YS51cmwpKTtcbmNvbnN0IHByb21wdHNEaXIgPSBqb2luKF9fZGlybmFtZSwgXCIuLlwiLCBcInByb21wdHNcIik7XG5cbmZ1bmN0aW9uIHJlYWRQcm9tcHQobmFtZTogc3RyaW5nKTogc3RyaW5nIHtcbiAgcmV0dXJuIHJlYWRGaWxlU3luYyhqb2luKHByb21wdHNEaXIsIG5hbWUpLCBcInV0Zi04XCIpO1xufVxuXG50ZXN0KFwiYWRkLXRlc3RzIHByb21wdCBmb3JiaWRzIHJlZmVyZW5jaW5nIGdpdGlnbm9yZWQgcGF0aHNcIiwgKCkgPT4ge1xuICBjb25zdCBwcm9tcHQgPSByZWFkUHJvbXB0KFwiYWRkLXRlc3RzLm1kXCIpO1xuXG4gIGFzc2VydC5tYXRjaChcbiAgICBwcm9tcHQsXG4gICAgL2dpdGlnbm9yZS9pLFxuICAgIFwiYWRkLXRlc3RzIHByb21wdCBzaG91bGQgbWVudGlvbiAuZ2l0aWdub3JlIHRvIHJ1bGUgb3V0IHJlZmVyZW5jaW5nIGxvY2FsLW9ubHkgZmlsZXNcIixcbiAgKTtcbiAgYXNzZXJ0Lm1hdGNoKHByb21wdCwgL1xcLmdzZFxcLy8sIFwiYWRkLXRlc3RzIHByb21wdCBzaG91bGQgbmFtZSAuZ3NkLyBhcyBvZmYtbGltaXRzIGZvciB0ZXN0c1wiKTtcbiAgYXNzZXJ0Lm1hdGNoKHByb21wdCwgL1xcLnBsYW5uaW5nXFwvLywgXCJhZGQtdGVzdHMgcHJvbXB0IHNob3VsZCBuYW1lIC5wbGFubmluZy8gYXMgb2ZmLWxpbWl0cyBmb3IgdGVzdHNcIik7XG4gIGFzc2VydC5tYXRjaChwcm9tcHQsIC9cXC5hdWRpdHNcXC8vLCBcImFkZC10ZXN0cyBwcm9tcHQgc2hvdWxkIG5hbWUgLmF1ZGl0cy8gYXMgb2ZmLWxpbWl0cyBmb3IgdGVzdHNcIik7XG4gIGFzc2VydC5tYXRjaChcbiAgICBwcm9tcHQsXG4gICAgL3RyYWNrZWQvaSxcbiAgICBcImFkZC10ZXN0cyBwcm9tcHQgc2hvdWxkIGZyYW1lIHRoZSBydWxlIGluIHRlcm1zIG9mIHRyYWNrZWQgZmlsZXNcIixcbiAgKTtcbn0pO1xuXG50ZXN0KFwicGxhbi1zbGljZSBwcm9tcHQgd2FybnMgYWdhaW5zdCBwbGFubmluZyB0ZXN0cyB0aGF0IGRlcGVuZCBvbiBnaXRpZ25vcmVkIGZpbGVzXCIsICgpID0+IHtcbiAgY29uc3QgcHJvbXB0ID0gcmVhZFByb21wdChcInBsYW4tc2xpY2UubWRcIik7XG5cbiAgYXNzZXJ0Lm1hdGNoKFxuICAgIHByb21wdCxcbiAgICAvZ2l0aWdub3JlL2ksXG4gICAgXCJwbGFuLXNsaWNlIHByb21wdCBzaG91bGQgd2FybiBhZ2FpbnN0IHBsYW5uaW5nIHRlc3RzIHRoYXQgZGVwZW5kIG9uIC5naXRpZ25vcmUgcGF0aHNcIixcbiAgKTtcbiAgYXNzZXJ0Lm1hdGNoKHByb21wdCwgL1xcLmdzZFxcLy8sIFwicGxhbi1zbGljZSBwcm9tcHQgc2hvdWxkIG5hbWUgLmdzZC8gYXMgb2ZmLWxpbWl0cyBmb3IgcGxhbm5lZCB0ZXN0c1wiKTtcbiAgYXNzZXJ0Lm1hdGNoKHByb21wdCwgL1xcLnBsYW5uaW5nXFwvLywgXCJwbGFuLXNsaWNlIHByb21wdCBzaG91bGQgbmFtZSAucGxhbm5pbmcvIGFzIG9mZi1saW1pdHMgZm9yIHBsYW5uZWQgdGVzdHNcIik7XG4gIGFzc2VydC5tYXRjaChwcm9tcHQsIC9cXC5hdWRpdHNcXC8vLCBcInBsYW4tc2xpY2UgcHJvbXB0IHNob3VsZCBuYW1lIC5hdWRpdHMvIGFzIG9mZi1saW1pdHMgZm9yIHBsYW5uZWQgdGVzdHNcIik7XG59KTtcblxudGVzdChcImV4ZWN1dGUtdGFzayBwcm9tcHQgZm9yYmlkcyB0ZXN0cyB0aGF0IHJlZmVyZW5jZSBnaXRpZ25vcmVkIHBhdGhzXCIsICgpID0+IHtcbiAgY29uc3QgcHJvbXB0ID0gcmVhZFByb21wdChcImV4ZWN1dGUtdGFzay5tZFwiKTtcblxuICBhc3NlcnQubWF0Y2goXG4gICAgcHJvbXB0LFxuICAgIC9naXRpZ25vcmUvaSxcbiAgICBcImV4ZWN1dGUtdGFzayBwcm9tcHQgc2hvdWxkIGZvcmJpZCByZWZlcmVuY2luZyBnaXRpZ25vcmVkIHBhdGhzIGZyb20gdGVzdHNcIixcbiAgKTtcbiAgYXNzZXJ0Lm1hdGNoKHByb21wdCwgL1xcLmdzZFxcLy8sIFwiZXhlY3V0ZS10YXNrIHByb21wdCBzaG91bGQgbmFtZSAuZ3NkLyBhcyBvZmYtbGltaXRzIGZvciB0ZXN0c1wiKTtcbiAgYXNzZXJ0Lm1hdGNoKHByb21wdCwgL1xcLnBsYW5uaW5nXFwvLywgXCJleGVjdXRlLXRhc2sgcHJvbXB0IHNob3VsZCBuYW1lIC5wbGFubmluZy8gYXMgb2ZmLWxpbWl0cyBmb3IgdGVzdHNcIik7XG4gIGFzc2VydC5tYXRjaChwcm9tcHQsIC9cXC5hdWRpdHNcXC8vLCBcImV4ZWN1dGUtdGFzayBwcm9tcHQgc2hvdWxkIG5hbWUgLmF1ZGl0cy8gYXMgb2ZmLWxpbWl0cyBmb3IgdGVzdHNcIik7XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFDbkIsU0FBUyxvQkFBb0I7QUFDN0IsU0FBUyxTQUFTLFlBQVk7QUFDOUIsU0FBUyxxQkFBcUI7QUFFOUIsTUFBTSxZQUFZLFFBQVEsY0FBYyxZQUFZLEdBQUcsQ0FBQztBQUN4RCxNQUFNLGFBQWEsS0FBSyxXQUFXLE1BQU0sU0FBUztBQUVsRCxTQUFTLFdBQVcsTUFBc0I7QUFDeEMsU0FBTyxhQUFhLEtBQUssWUFBWSxJQUFJLEdBQUcsT0FBTztBQUNyRDtBQUVBLEtBQUsseURBQXlELE1BQU07QUFDbEUsUUFBTSxTQUFTLFdBQVcsY0FBYztBQUV4QyxTQUFPO0FBQUEsSUFDTDtBQUFBLElBQ0E7QUFBQSxJQUNBO0FBQUEsRUFDRjtBQUNBLFNBQU8sTUFBTSxRQUFRLFdBQVcsNERBQTREO0FBQzVGLFNBQU8sTUFBTSxRQUFRLGdCQUFnQixpRUFBaUU7QUFDdEcsU0FBTyxNQUFNLFFBQVEsY0FBYywrREFBK0Q7QUFDbEcsU0FBTztBQUFBLElBQ0w7QUFBQSxJQUNBO0FBQUEsSUFDQTtBQUFBLEVBQ0Y7QUFDRixDQUFDO0FBRUQsS0FBSyxrRkFBa0YsTUFBTTtBQUMzRixRQUFNLFNBQVMsV0FBVyxlQUFlO0FBRXpDLFNBQU87QUFBQSxJQUNMO0FBQUEsSUFDQTtBQUFBLElBQ0E7QUFBQSxFQUNGO0FBQ0EsU0FBTyxNQUFNLFFBQVEsV0FBVyxxRUFBcUU7QUFDckcsU0FBTyxNQUFNLFFBQVEsZ0JBQWdCLDBFQUEwRTtBQUMvRyxTQUFPLE1BQU0sUUFBUSxjQUFjLHdFQUF3RTtBQUM3RyxDQUFDO0FBRUQsS0FBSyxxRUFBcUUsTUFBTTtBQUM5RSxRQUFNLFNBQVMsV0FBVyxpQkFBaUI7QUFFM0MsU0FBTztBQUFBLElBQ0w7QUFBQSxJQUNBO0FBQUEsSUFDQTtBQUFBLEVBQ0Y7QUFDQSxTQUFPLE1BQU0sUUFBUSxXQUFXLCtEQUErRDtBQUMvRixTQUFPLE1BQU0sUUFBUSxnQkFBZ0Isb0VBQW9FO0FBQ3pHLFNBQU8sTUFBTSxRQUFRLGNBQWMsa0VBQWtFO0FBQ3ZHLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

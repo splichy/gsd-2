@@ -1,0 +1,22 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { _resolveAutoWorktreeStartPoint } from "../auto-worktree.js";
+test("auto-worktree start point prefers milestone integration branch", () => {
+  const startPoint = _resolveAutoWorktreeStartPoint(
+    "release/integration",
+    "dev",
+    () => true
+  );
+  assert.equal(startPoint, "release/integration");
+});
+test("auto-worktree start point uses git.main_branch only when it exists", () => {
+  assert.equal(
+    _resolveAutoWorktreeStartPoint(null, "dev", (branch) => branch === "dev"),
+    "dev"
+  );
+  assert.equal(
+    _resolveAutoWorktreeStartPoint(null, "stale", () => false),
+    void 0
+  );
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy93b3JrdHJlZS1tYWluLWJyYW5jaC50ZXN0LnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyIvLyBHU0QtMiBcdTIwMTQgQXV0by13b3JrdHJlZSBtYWluIGJyYW5jaCBwcmVmZXJlbmNlIHJlZ3Jlc3Npb24gdGVzdHMuXG5cbmltcG9ydCB7IHRlc3QgfSBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcblxuaW1wb3J0IHsgX3Jlc29sdmVBdXRvV29ya3RyZWVTdGFydFBvaW50IH0gZnJvbSBcIi4uL2F1dG8td29ya3RyZWUudHNcIjtcblxudGVzdChcImF1dG8td29ya3RyZWUgc3RhcnQgcG9pbnQgcHJlZmVycyBtaWxlc3RvbmUgaW50ZWdyYXRpb24gYnJhbmNoXCIsICgpID0+IHtcbiAgY29uc3Qgc3RhcnRQb2ludCA9IF9yZXNvbHZlQXV0b1dvcmt0cmVlU3RhcnRQb2ludChcbiAgICBcInJlbGVhc2UvaW50ZWdyYXRpb25cIixcbiAgICBcImRldlwiLFxuICAgICgpID0+IHRydWUsXG4gICk7XG5cbiAgYXNzZXJ0LmVxdWFsKHN0YXJ0UG9pbnQsIFwicmVsZWFzZS9pbnRlZ3JhdGlvblwiKTtcbn0pO1xuXG50ZXN0KFwiYXV0by13b3JrdHJlZSBzdGFydCBwb2ludCB1c2VzIGdpdC5tYWluX2JyYW5jaCBvbmx5IHdoZW4gaXQgZXhpc3RzXCIsICgpID0+IHtcbiAgYXNzZXJ0LmVxdWFsKFxuICAgIF9yZXNvbHZlQXV0b1dvcmt0cmVlU3RhcnRQb2ludChudWxsLCBcImRldlwiLCAoYnJhbmNoKSA9PiBicmFuY2ggPT09IFwiZGV2XCIpLFxuICAgIFwiZGV2XCIsXG4gICk7XG4gIGFzc2VydC5lcXVhbChcbiAgICBfcmVzb2x2ZUF1dG9Xb3JrdHJlZVN0YXJ0UG9pbnQobnVsbCwgXCJzdGFsZVwiLCAoKSA9PiBmYWxzZSksXG4gICAgdW5kZWZpbmVkLFxuICApO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFFQSxTQUFTLFlBQVk7QUFDckIsT0FBTyxZQUFZO0FBRW5CLFNBQVMsc0NBQXNDO0FBRS9DLEtBQUssa0VBQWtFLE1BQU07QUFDM0UsUUFBTSxhQUFhO0FBQUEsSUFDakI7QUFBQSxJQUNBO0FBQUEsSUFDQSxNQUFNO0FBQUEsRUFDUjtBQUVBLFNBQU8sTUFBTSxZQUFZLHFCQUFxQjtBQUNoRCxDQUFDO0FBRUQsS0FBSyxzRUFBc0UsTUFBTTtBQUMvRSxTQUFPO0FBQUEsSUFDTCwrQkFBK0IsTUFBTSxPQUFPLENBQUMsV0FBVyxXQUFXLEtBQUs7QUFBQSxJQUN4RTtBQUFBLEVBQ0Y7QUFDQSxTQUFPO0FBQUEsSUFDTCwrQkFBK0IsTUFBTSxTQUFTLE1BQU0sS0FBSztBQUFBLElBQ3pEO0FBQUEsRUFDRjtBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

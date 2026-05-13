@@ -1,0 +1,29 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { SettingsManager } from "../../packages/pi-coding-agent/src/core/settings-manager.js";
+test("SettingsManager reads defaultProvider/defaultModel from the explicit agentDir used by CLI (#3860)", () => {
+  const root = mkdtempSync(join(tmpdir(), "gsd-cli-settings-"));
+  const cwd = join(root, "project");
+  const agentDir = join(root, ".gsd", "agent");
+  try {
+    mkdirSync(cwd, { recursive: true });
+    mkdirSync(agentDir, { recursive: true });
+    writeFileSync(
+      join(agentDir, "settings.json"),
+      JSON.stringify({
+        defaultProvider: "example-provider",
+        defaultModel: "gpt-5.4"
+      }),
+      "utf-8"
+    );
+    const settingsManager = SettingsManager.create(cwd, agentDir);
+    assert.equal(settingsManager.getDefaultProvider(), "example-provider");
+    assert.equal(settingsManager.getDefaultModel(), "gpt-5.4");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL2NsaS1vbmJvYXJkaW5nLWN1c3RvbS1wcm92aWRlci50ZXN0LnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyJpbXBvcnQgdGVzdCBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcbmltcG9ydCB7IG1rZGlyU3luYywgbWtkdGVtcFN5bmMsIHJtU3luYywgd3JpdGVGaWxlU3luYyB9IGZyb20gXCJub2RlOmZzXCI7XG5pbXBvcnQgeyBqb2luIH0gZnJvbSBcIm5vZGU6cGF0aFwiO1xuaW1wb3J0IHsgdG1wZGlyIH0gZnJvbSBcIm5vZGU6b3NcIjtcblxuaW1wb3J0IHsgU2V0dGluZ3NNYW5hZ2VyIH0gZnJvbSBcIi4uLy4uL3BhY2thZ2VzL3BpLWNvZGluZy1hZ2VudC9zcmMvY29yZS9zZXR0aW5ncy1tYW5hZ2VyLnRzXCI7XG5cbnRlc3QoXCJTZXR0aW5nc01hbmFnZXIgcmVhZHMgZGVmYXVsdFByb3ZpZGVyL2RlZmF1bHRNb2RlbCBmcm9tIHRoZSBleHBsaWNpdCBhZ2VudERpciB1c2VkIGJ5IENMSSAoIzM4NjApXCIsICgpID0+IHtcbiAgY29uc3Qgcm9vdCA9IG1rZHRlbXBTeW5jKGpvaW4odG1wZGlyKCksIFwiZ3NkLWNsaS1zZXR0aW5ncy1cIikpO1xuICBjb25zdCBjd2QgPSBqb2luKHJvb3QsIFwicHJvamVjdFwiKTtcbiAgY29uc3QgYWdlbnREaXIgPSBqb2luKHJvb3QsIFwiLmdzZFwiLCBcImFnZW50XCIpO1xuXG4gIHRyeSB7XG4gICAgbWtkaXJTeW5jKGN3ZCwgeyByZWN1cnNpdmU6IHRydWUgfSk7XG4gICAgbWtkaXJTeW5jKGFnZW50RGlyLCB7IHJlY3Vyc2l2ZTogdHJ1ZSB9KTtcbiAgICB3cml0ZUZpbGVTeW5jKFxuICAgICAgam9pbihhZ2VudERpciwgXCJzZXR0aW5ncy5qc29uXCIpLFxuICAgICAgSlNPTi5zdHJpbmdpZnkoe1xuICAgICAgICBkZWZhdWx0UHJvdmlkZXI6IFwiZXhhbXBsZS1wcm92aWRlclwiLFxuICAgICAgICBkZWZhdWx0TW9kZWw6IFwiZ3B0LTUuNFwiLFxuICAgICAgfSksXG4gICAgICBcInV0Zi04XCIsXG4gICAgKTtcblxuICAgIGNvbnN0IHNldHRpbmdzTWFuYWdlciA9IFNldHRpbmdzTWFuYWdlci5jcmVhdGUoY3dkLCBhZ2VudERpcik7XG4gICAgYXNzZXJ0LmVxdWFsKHNldHRpbmdzTWFuYWdlci5nZXREZWZhdWx0UHJvdmlkZXIoKSwgXCJleGFtcGxlLXByb3ZpZGVyXCIpO1xuICAgIGFzc2VydC5lcXVhbChzZXR0aW5nc01hbmFnZXIuZ2V0RGVmYXVsdE1vZGVsKCksIFwiZ3B0LTUuNFwiKTtcbiAgfSBmaW5hbGx5IHtcbiAgICBybVN5bmMocm9vdCwgeyByZWN1cnNpdmU6IHRydWUsIGZvcmNlOiB0cnVlIH0pO1xuICB9XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFDbkIsU0FBUyxXQUFXLGFBQWEsUUFBUSxxQkFBcUI7QUFDOUQsU0FBUyxZQUFZO0FBQ3JCLFNBQVMsY0FBYztBQUV2QixTQUFTLHVCQUF1QjtBQUVoQyxLQUFLLHFHQUFxRyxNQUFNO0FBQzlHLFFBQU0sT0FBTyxZQUFZLEtBQUssT0FBTyxHQUFHLG1CQUFtQixDQUFDO0FBQzVELFFBQU0sTUFBTSxLQUFLLE1BQU0sU0FBUztBQUNoQyxRQUFNLFdBQVcsS0FBSyxNQUFNLFFBQVEsT0FBTztBQUUzQyxNQUFJO0FBQ0YsY0FBVSxLQUFLLEVBQUUsV0FBVyxLQUFLLENBQUM7QUFDbEMsY0FBVSxVQUFVLEVBQUUsV0FBVyxLQUFLLENBQUM7QUFDdkM7QUFBQSxNQUNFLEtBQUssVUFBVSxlQUFlO0FBQUEsTUFDOUIsS0FBSyxVQUFVO0FBQUEsUUFDYixpQkFBaUI7QUFBQSxRQUNqQixjQUFjO0FBQUEsTUFDaEIsQ0FBQztBQUFBLE1BQ0Q7QUFBQSxJQUNGO0FBRUEsVUFBTSxrQkFBa0IsZ0JBQWdCLE9BQU8sS0FBSyxRQUFRO0FBQzVELFdBQU8sTUFBTSxnQkFBZ0IsbUJBQW1CLEdBQUcsa0JBQWtCO0FBQ3JFLFdBQU8sTUFBTSxnQkFBZ0IsZ0JBQWdCLEdBQUcsU0FBUztBQUFBLEVBQzNELFVBQUU7QUFDQSxXQUFPLE1BQU0sRUFBRSxXQUFXLE1BQU0sT0FBTyxLQUFLLENBQUM7QUFBQSxFQUMvQztBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

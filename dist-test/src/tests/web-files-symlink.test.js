@@ -1,0 +1,39 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { resolveSecurePath } from "../../web/lib/secure-path.js";
+test("web file API resolves normal project files under the canonical root", () => {
+  const root = mkdtempSync(join(tmpdir(), "gsd-web-root-"));
+  try {
+    writeFileSync(join(root, "inside.txt"), "inside");
+    assert.equal(resolveSecurePath("inside.txt", root), join(realpathSync.native(root), "inside.txt"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+test("web file API rejects symlinks that resolve outside the project root", () => {
+  const root = mkdtempSync(join(tmpdir(), "gsd-web-root-"));
+  const outside = mkdtempSync(join(tmpdir(), "gsd-web-outside-"));
+  try {
+    writeFileSync(join(outside, "secret.txt"), "secret");
+    symlinkSync(join(outside, "secret.txt"), join(root, "linked-secret.txt"));
+    assert.equal(resolveSecurePath("linked-secret.txt", root), null);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+    rmSync(outside, { recursive: true, force: true });
+  }
+});
+test("web file API rejects writes through symlinked parent directories outside root", () => {
+  const root = mkdtempSync(join(tmpdir(), "gsd-web-root-"));
+  const outside = mkdtempSync(join(tmpdir(), "gsd-web-outside-"));
+  try {
+    symlinkSync(outside, join(root, "linked-outside"), "dir");
+    assert.equal(resolveSecurePath("linked-outside/new.txt", root), null);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+    rmSync(outside, { recursive: true, force: true });
+  }
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL3dlYi1maWxlcy1zeW1saW5rLnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImltcG9ydCB0ZXN0IGZyb20gXCJub2RlOnRlc3RcIjtcbmltcG9ydCBhc3NlcnQgZnJvbSBcIm5vZGU6YXNzZXJ0L3N0cmljdFwiO1xuaW1wb3J0IHsgbWtkdGVtcFN5bmMsIHJlYWxwYXRoU3luYywgcm1TeW5jLCBzeW1saW5rU3luYywgd3JpdGVGaWxlU3luYyB9IGZyb20gXCJub2RlOmZzXCI7XG5pbXBvcnQgeyBqb2luIH0gZnJvbSBcIm5vZGU6cGF0aFwiO1xuaW1wb3J0IHsgdG1wZGlyIH0gZnJvbSBcIm5vZGU6b3NcIjtcblxuaW1wb3J0IHsgcmVzb2x2ZVNlY3VyZVBhdGggfSBmcm9tIFwiLi4vLi4vd2ViL2xpYi9zZWN1cmUtcGF0aC50c1wiO1xuXG50ZXN0KFwid2ViIGZpbGUgQVBJIHJlc29sdmVzIG5vcm1hbCBwcm9qZWN0IGZpbGVzIHVuZGVyIHRoZSBjYW5vbmljYWwgcm9vdFwiLCAoKSA9PiB7XG4gIGNvbnN0IHJvb3QgPSBta2R0ZW1wU3luYyhqb2luKHRtcGRpcigpLCBcImdzZC13ZWItcm9vdC1cIikpO1xuICB0cnkge1xuICAgIHdyaXRlRmlsZVN5bmMoam9pbihyb290LCBcImluc2lkZS50eHRcIiksIFwiaW5zaWRlXCIpO1xuXG4gICAgYXNzZXJ0LmVxdWFsKHJlc29sdmVTZWN1cmVQYXRoKFwiaW5zaWRlLnR4dFwiLCByb290KSwgam9pbihyZWFscGF0aFN5bmMubmF0aXZlKHJvb3QpLCBcImluc2lkZS50eHRcIikpO1xuICB9IGZpbmFsbHkge1xuICAgIHJtU3luYyhyb290LCB7IHJlY3Vyc2l2ZTogdHJ1ZSwgZm9yY2U6IHRydWUgfSk7XG4gIH1cbn0pO1xuXG50ZXN0KFwid2ViIGZpbGUgQVBJIHJlamVjdHMgc3ltbGlua3MgdGhhdCByZXNvbHZlIG91dHNpZGUgdGhlIHByb2plY3Qgcm9vdFwiLCAoKSA9PiB7XG4gIGNvbnN0IHJvb3QgPSBta2R0ZW1wU3luYyhqb2luKHRtcGRpcigpLCBcImdzZC13ZWItcm9vdC1cIikpO1xuICBjb25zdCBvdXRzaWRlID0gbWtkdGVtcFN5bmMoam9pbih0bXBkaXIoKSwgXCJnc2Qtd2ViLW91dHNpZGUtXCIpKTtcbiAgdHJ5IHtcbiAgICB3cml0ZUZpbGVTeW5jKGpvaW4ob3V0c2lkZSwgXCJzZWNyZXQudHh0XCIpLCBcInNlY3JldFwiKTtcbiAgICBzeW1saW5rU3luYyhqb2luKG91dHNpZGUsIFwic2VjcmV0LnR4dFwiKSwgam9pbihyb290LCBcImxpbmtlZC1zZWNyZXQudHh0XCIpKTtcblxuICAgIGFzc2VydC5lcXVhbChyZXNvbHZlU2VjdXJlUGF0aChcImxpbmtlZC1zZWNyZXQudHh0XCIsIHJvb3QpLCBudWxsKTtcbiAgfSBmaW5hbGx5IHtcbiAgICBybVN5bmMocm9vdCwgeyByZWN1cnNpdmU6IHRydWUsIGZvcmNlOiB0cnVlIH0pO1xuICAgIHJtU3luYyhvdXRzaWRlLCB7IHJlY3Vyc2l2ZTogdHJ1ZSwgZm9yY2U6IHRydWUgfSk7XG4gIH1cbn0pO1xuXG50ZXN0KFwid2ViIGZpbGUgQVBJIHJlamVjdHMgd3JpdGVzIHRocm91Z2ggc3ltbGlua2VkIHBhcmVudCBkaXJlY3RvcmllcyBvdXRzaWRlIHJvb3RcIiwgKCkgPT4ge1xuICBjb25zdCByb290ID0gbWtkdGVtcFN5bmMoam9pbih0bXBkaXIoKSwgXCJnc2Qtd2ViLXJvb3QtXCIpKTtcbiAgY29uc3Qgb3V0c2lkZSA9IG1rZHRlbXBTeW5jKGpvaW4odG1wZGlyKCksIFwiZ3NkLXdlYi1vdXRzaWRlLVwiKSk7XG4gIHRyeSB7XG4gICAgc3ltbGlua1N5bmMob3V0c2lkZSwgam9pbihyb290LCBcImxpbmtlZC1vdXRzaWRlXCIpLCBcImRpclwiKTtcblxuICAgIGFzc2VydC5lcXVhbChyZXNvbHZlU2VjdXJlUGF0aChcImxpbmtlZC1vdXRzaWRlL25ldy50eHRcIiwgcm9vdCksIG51bGwpO1xuICB9IGZpbmFsbHkge1xuICAgIHJtU3luYyhyb290LCB7IHJlY3Vyc2l2ZTogdHJ1ZSwgZm9yY2U6IHRydWUgfSk7XG4gICAgcm1TeW5jKG91dHNpZGUsIHsgcmVjdXJzaXZlOiB0cnVlLCBmb3JjZTogdHJ1ZSB9KTtcbiAgfVxufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxPQUFPLFVBQVU7QUFDakIsT0FBTyxZQUFZO0FBQ25CLFNBQVMsYUFBYSxjQUFjLFFBQVEsYUFBYSxxQkFBcUI7QUFDOUUsU0FBUyxZQUFZO0FBQ3JCLFNBQVMsY0FBYztBQUV2QixTQUFTLHlCQUF5QjtBQUVsQyxLQUFLLHVFQUF1RSxNQUFNO0FBQ2hGLFFBQU0sT0FBTyxZQUFZLEtBQUssT0FBTyxHQUFHLGVBQWUsQ0FBQztBQUN4RCxNQUFJO0FBQ0Ysa0JBQWMsS0FBSyxNQUFNLFlBQVksR0FBRyxRQUFRO0FBRWhELFdBQU8sTUFBTSxrQkFBa0IsY0FBYyxJQUFJLEdBQUcsS0FBSyxhQUFhLE9BQU8sSUFBSSxHQUFHLFlBQVksQ0FBQztBQUFBLEVBQ25HLFVBQUU7QUFDQSxXQUFPLE1BQU0sRUFBRSxXQUFXLE1BQU0sT0FBTyxLQUFLLENBQUM7QUFBQSxFQUMvQztBQUNGLENBQUM7QUFFRCxLQUFLLHVFQUF1RSxNQUFNO0FBQ2hGLFFBQU0sT0FBTyxZQUFZLEtBQUssT0FBTyxHQUFHLGVBQWUsQ0FBQztBQUN4RCxRQUFNLFVBQVUsWUFBWSxLQUFLLE9BQU8sR0FBRyxrQkFBa0IsQ0FBQztBQUM5RCxNQUFJO0FBQ0Ysa0JBQWMsS0FBSyxTQUFTLFlBQVksR0FBRyxRQUFRO0FBQ25ELGdCQUFZLEtBQUssU0FBUyxZQUFZLEdBQUcsS0FBSyxNQUFNLG1CQUFtQixDQUFDO0FBRXhFLFdBQU8sTUFBTSxrQkFBa0IscUJBQXFCLElBQUksR0FBRyxJQUFJO0FBQUEsRUFDakUsVUFBRTtBQUNBLFdBQU8sTUFBTSxFQUFFLFdBQVcsTUFBTSxPQUFPLEtBQUssQ0FBQztBQUM3QyxXQUFPLFNBQVMsRUFBRSxXQUFXLE1BQU0sT0FBTyxLQUFLLENBQUM7QUFBQSxFQUNsRDtBQUNGLENBQUM7QUFFRCxLQUFLLGlGQUFpRixNQUFNO0FBQzFGLFFBQU0sT0FBTyxZQUFZLEtBQUssT0FBTyxHQUFHLGVBQWUsQ0FBQztBQUN4RCxRQUFNLFVBQVUsWUFBWSxLQUFLLE9BQU8sR0FBRyxrQkFBa0IsQ0FBQztBQUM5RCxNQUFJO0FBQ0YsZ0JBQVksU0FBUyxLQUFLLE1BQU0sZ0JBQWdCLEdBQUcsS0FBSztBQUV4RCxXQUFPLE1BQU0sa0JBQWtCLDBCQUEwQixJQUFJLEdBQUcsSUFBSTtBQUFBLEVBQ3RFLFVBQUU7QUFDQSxXQUFPLE1BQU0sRUFBRSxXQUFXLE1BQU0sT0FBTyxLQUFLLENBQUM7QUFDN0MsV0FBTyxTQUFTLEVBQUUsV0FBVyxNQUFNLE9BQU8sS0FBSyxDQUFDO0FBQUEsRUFDbEQ7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

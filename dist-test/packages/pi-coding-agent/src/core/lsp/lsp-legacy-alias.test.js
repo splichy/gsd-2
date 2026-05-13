@@ -1,0 +1,47 @@
+import { describe, it, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as os from "node:os";
+import { loadConfig } from "./config.js";
+describe("LSP legacy server key aliases", () => {
+  let tmpDir;
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "lsp-alias-test-"));
+  });
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+  it("merges user override with legacy key 'kotlin-language-server' into 'kotlin-lsp'", () => {
+    const overrideConfig = {
+      servers: {
+        "kotlin-language-server": {
+          command: "node"
+        }
+      }
+    };
+    fs.writeFileSync(
+      path.join(tmpDir, "lsp.json"),
+      JSON.stringify(overrideConfig)
+    );
+    fs.writeFileSync(path.join(tmpDir, "build.gradle.kts"), "");
+    const config = loadConfig(tmpDir);
+    const kotlinServer = config.servers["kotlin-lsp"];
+    assert.ok(kotlinServer, "kotlin-lsp should exist in merged config");
+    assert.equal(
+      kotlinServer.command,
+      "node",
+      "command should be overridden from user config via legacy alias"
+    );
+    assert.ok(
+      kotlinServer.fileTypes.includes(".kt"),
+      "fileTypes should be inherited from defaults"
+    );
+    assert.equal(
+      config.servers["kotlin-language-server"],
+      void 0,
+      "legacy key should not appear as separate server"
+    );
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvcGktY29kaW5nLWFnZW50L3NyYy9jb3JlL2xzcC9sc3AtbGVnYWN5LWFsaWFzLnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbIi8vIEdTRDIgXHUyMDE0IFJlZ3Jlc3Npb24gdGVzdCBmb3IgTFNQIGxlZ2FjeSBzZXJ2ZXIga2V5IGFsaWFzZXNcbi8vIENvcHlyaWdodCAoYykgMjAyNiBKZXJlbXkgTWNTcGFkZGVuIDxqZXJlbXlAZmx1eGxhYnMubmV0PlxuXG4vKipcbiAqIFdoZW4gYSBkZWZhdWx0IHNlcnZlciBrZXkgaXMgcmVuYW1lZCAoZS5nLiwga290bGluLWxhbmd1YWdlLXNlcnZlciBcdTIxOTIga290bGluLWxzcCksXG4gKiB1c2VyIG92ZXJyaWRlcyByZWZlcmVuY2luZyB0aGUgb2xkIGtleSBtdXN0IHN0aWxsIG1lcmdlIGNvcnJlY3RseSB2aWEgTEVHQUNZX0FMSUFTRVMuXG4gKlxuICogVGhpcyB0ZXN0IGV4ZXJjaXNlcyB0aGUgbWVyZ2UgcGF0aCB0aHJvdWdoIGxvYWRDb25maWcoKSB3aXRoIGEgdGVtcCBwcm9qZWN0XG4gKiBjb250YWluaW5nIGFuIGxzcC5qc29uIHRoYXQgdXNlcyB0aGUgbGVnYWN5IGtleS5cbiAqL1xuXG5pbXBvcnQgeyBkZXNjcmliZSwgaXQsIGJlZm9yZUVhY2gsIGFmdGVyRWFjaCB9IGZyb20gXCJub2RlOnRlc3RcIjtcbmltcG9ydCBhc3NlcnQgZnJvbSBcIm5vZGU6YXNzZXJ0L3N0cmljdFwiO1xuaW1wb3J0ICogYXMgZnMgZnJvbSBcIm5vZGU6ZnNcIjtcbmltcG9ydCAqIGFzIHBhdGggZnJvbSBcIm5vZGU6cGF0aFwiO1xuaW1wb3J0ICogYXMgb3MgZnJvbSBcIm5vZGU6b3NcIjtcbmltcG9ydCB7IGxvYWRDb25maWcgfSBmcm9tIFwiLi9jb25maWcuanNcIjtcblxuZGVzY3JpYmUoXCJMU1AgbGVnYWN5IHNlcnZlciBrZXkgYWxpYXNlc1wiLCAoKSA9PiB7XG5cdGxldCB0bXBEaXI6IHN0cmluZztcblxuXHRiZWZvcmVFYWNoKCgpID0+IHtcblx0XHR0bXBEaXIgPSBmcy5ta2R0ZW1wU3luYyhwYXRoLmpvaW4ob3MudG1wZGlyKCksIFwibHNwLWFsaWFzLXRlc3QtXCIpKTtcblx0fSk7XG5cblx0YWZ0ZXJFYWNoKCgpID0+IHtcblx0XHRmcy5ybVN5bmModG1wRGlyLCB7IHJlY3Vyc2l2ZTogdHJ1ZSwgZm9yY2U6IHRydWUgfSk7XG5cdH0pO1xuXG5cdGl0KFwibWVyZ2VzIHVzZXIgb3ZlcnJpZGUgd2l0aCBsZWdhY3kga2V5ICdrb3RsaW4tbGFuZ3VhZ2Utc2VydmVyJyBpbnRvICdrb3RsaW4tbHNwJ1wiLCAoKSA9PiB7XG5cdFx0Ly8gV3JpdGUgYW4gbHNwLmpzb24gdGhhdCB1c2VzIHRoZSBvbGQga2V5IG5hbWUgd2l0aCBhIGNvbW1hbmQgdGhhdCBleGlzdHMgKG5vZGUpXG5cdFx0Ly8gc28gcmVzb2x2ZUNvbW1hbmQgZG9lc24ndCBmaWx0ZXIgaXQgb3V0LlxuXHRcdGNvbnN0IG92ZXJyaWRlQ29uZmlnID0ge1xuXHRcdFx0c2VydmVyczoge1xuXHRcdFx0XHRcImtvdGxpbi1sYW5ndWFnZS1zZXJ2ZXJcIjoge1xuXHRcdFx0XHRcdGNvbW1hbmQ6IFwibm9kZVwiLFxuXHRcdFx0XHR9LFxuXHRcdFx0fSxcblx0XHR9O1xuXHRcdGZzLndyaXRlRmlsZVN5bmMoXG5cdFx0XHRwYXRoLmpvaW4odG1wRGlyLCBcImxzcC5qc29uXCIpLFxuXHRcdFx0SlNPTi5zdHJpbmdpZnkob3ZlcnJpZGVDb25maWcpLFxuXHRcdCk7XG5cblx0XHQvLyBBbHNvIGFkZCByb290IG1hcmtlcnMgc28gdGhlIHNlcnZlciBpcyBkZXRlY3RlZFxuXHRcdGZzLndyaXRlRmlsZVN5bmMocGF0aC5qb2luKHRtcERpciwgXCJidWlsZC5ncmFkbGUua3RzXCIpLCBcIlwiKTtcblxuXHRcdGNvbnN0IGNvbmZpZyA9IGxvYWRDb25maWcodG1wRGlyKTtcblxuXHRcdC8vIFRoZSBtZXJnZWQgY29uZmlnIHNob3VsZCBoYXZlIGtvdGxpbi1sc3AgKG5ldyBrZXkpIHdpdGggdGhlIHVzZXIncyBjb21tYW5kIG92ZXJyaWRlXG5cdFx0Y29uc3Qga290bGluU2VydmVyID0gY29uZmlnLnNlcnZlcnNbXCJrb3RsaW4tbHNwXCJdO1xuXHRcdGFzc2VydC5vayhrb3RsaW5TZXJ2ZXIsIFwia290bGluLWxzcCBzaG91bGQgZXhpc3QgaW4gbWVyZ2VkIGNvbmZpZ1wiKTtcblx0XHRhc3NlcnQuZXF1YWwoXG5cdFx0XHRrb3RsaW5TZXJ2ZXIuY29tbWFuZCxcblx0XHRcdFwibm9kZVwiLFxuXHRcdFx0XCJjb21tYW5kIHNob3VsZCBiZSBvdmVycmlkZGVuIGZyb20gdXNlciBjb25maWcgdmlhIGxlZ2FjeSBhbGlhc1wiLFxuXHRcdCk7XG5cdFx0YXNzZXJ0Lm9rKFxuXHRcdFx0a290bGluU2VydmVyLmZpbGVUeXBlcy5pbmNsdWRlcyhcIi5rdFwiKSxcblx0XHRcdFwiZmlsZVR5cGVzIHNob3VsZCBiZSBpbmhlcml0ZWQgZnJvbSBkZWZhdWx0c1wiLFxuXHRcdCk7XG5cblx0XHQvLyBUaGUgb2xkIGtleSBzaG91bGQgTk9UIGFwcGVhciBhcyBhIHNlcGFyYXRlIGVudHJ5XG5cdFx0YXNzZXJ0LmVxdWFsKFxuXHRcdFx0Y29uZmlnLnNlcnZlcnNbXCJrb3RsaW4tbGFuZ3VhZ2Utc2VydmVyXCJdLFxuXHRcdFx0dW5kZWZpbmVkLFxuXHRcdFx0XCJsZWdhY3kga2V5IHNob3VsZCBub3QgYXBwZWFyIGFzIHNlcGFyYXRlIHNlcnZlclwiLFxuXHRcdCk7XG5cdH0pO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFXQSxTQUFTLFVBQVUsSUFBSSxZQUFZLGlCQUFpQjtBQUNwRCxPQUFPLFlBQVk7QUFDbkIsWUFBWSxRQUFRO0FBQ3BCLFlBQVksVUFBVTtBQUN0QixZQUFZLFFBQVE7QUFDcEIsU0FBUyxrQkFBa0I7QUFFM0IsU0FBUyxpQ0FBaUMsTUFBTTtBQUMvQyxNQUFJO0FBRUosYUFBVyxNQUFNO0FBQ2hCLGFBQVMsR0FBRyxZQUFZLEtBQUssS0FBSyxHQUFHLE9BQU8sR0FBRyxpQkFBaUIsQ0FBQztBQUFBLEVBQ2xFLENBQUM7QUFFRCxZQUFVLE1BQU07QUFDZixPQUFHLE9BQU8sUUFBUSxFQUFFLFdBQVcsTUFBTSxPQUFPLEtBQUssQ0FBQztBQUFBLEVBQ25ELENBQUM7QUFFRCxLQUFHLG1GQUFtRixNQUFNO0FBRzNGLFVBQU0saUJBQWlCO0FBQUEsTUFDdEIsU0FBUztBQUFBLFFBQ1IsMEJBQTBCO0FBQUEsVUFDekIsU0FBUztBQUFBLFFBQ1Y7QUFBQSxNQUNEO0FBQUEsSUFDRDtBQUNBLE9BQUc7QUFBQSxNQUNGLEtBQUssS0FBSyxRQUFRLFVBQVU7QUFBQSxNQUM1QixLQUFLLFVBQVUsY0FBYztBQUFBLElBQzlCO0FBR0EsT0FBRyxjQUFjLEtBQUssS0FBSyxRQUFRLGtCQUFrQixHQUFHLEVBQUU7QUFFMUQsVUFBTSxTQUFTLFdBQVcsTUFBTTtBQUdoQyxVQUFNLGVBQWUsT0FBTyxRQUFRLFlBQVk7QUFDaEQsV0FBTyxHQUFHLGNBQWMsMENBQTBDO0FBQ2xFLFdBQU87QUFBQSxNQUNOLGFBQWE7QUFBQSxNQUNiO0FBQUEsTUFDQTtBQUFBLElBQ0Q7QUFDQSxXQUFPO0FBQUEsTUFDTixhQUFhLFVBQVUsU0FBUyxLQUFLO0FBQUEsTUFDckM7QUFBQSxJQUNEO0FBR0EsV0FBTztBQUFBLE1BQ04sT0FBTyxRQUFRLHdCQUF3QjtBQUFBLE1BQ3ZDO0FBQUEsTUFDQTtBQUFBLElBQ0Q7QUFBQSxFQUNELENBQUM7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

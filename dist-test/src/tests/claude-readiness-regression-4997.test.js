@@ -1,0 +1,49 @@
+import test, { describe } from "node:test";
+import assert from "node:assert/strict";
+import {
+  buildClaudeSpawnInvocation as cliSpawnInvocation,
+  getClaudeCommandCandidates as cliCandidates,
+  parseAuthStatus as parseCliAuthStatus
+} from "../claude-cli-check.js";
+import {
+  buildClaudeSpawnInvocation as readinessSpawnInvocation,
+  getClaudeCommandCandidates as readinessCandidates,
+  parseAuthStatus as parseReadinessAuthStatus
+} from "../resources/extensions/claude-code-cli/readiness.js";
+describe("Claude auth detection JSON output (#4997)", () => {
+  test("readiness.ts parses loggedIn JSON", () => {
+    assert.equal(parseReadinessAuthStatus('{"loggedIn":true}'), true);
+    assert.equal(parseReadinessAuthStatus('{"loggedIn":false}'), false);
+  });
+  test("claude-cli-check.ts parses loggedIn JSON", () => {
+    assert.equal(parseCliAuthStatus('{"loggedIn":true}'), true);
+    assert.equal(parseCliAuthStatus('{"loggedIn":false}'), false);
+  });
+});
+describe("Claude auth detection text fallback (#4997)", () => {
+  test("readiness.ts falls back to plain auth status text", () => {
+    assert.equal(parseReadinessAuthStatus("Authenticated as user@example.com"), true);
+    assert.equal(parseReadinessAuthStatus("Not logged in"), false);
+  });
+  test("claude-cli-check.ts falls back to plain auth status text", () => {
+    assert.equal(parseCliAuthStatus("signed in with subscription"), true);
+    assert.equal(parseCliAuthStatus("No credentials found"), false);
+  });
+});
+describe("Claude auth detection Windows candidate planning (#4997)", () => {
+  test("readiness.ts plans all Windows candidates and cmd /c spawn", () => {
+    assert.deepEqual(readinessCandidates("win32"), ["claude.cmd", "claude.exe", "claude"]);
+    assert.deepEqual(readinessSpawnInvocation("claude.exe", ["auth", "status", "--json"], "win32"), {
+      command: "cmd",
+      args: ["/c", "claude.exe", "auth", "status", "--json"]
+    });
+  });
+  test("claude-cli-check.ts plans all Windows candidates and cmd /c spawn", () => {
+    assert.deepEqual(cliCandidates("win32"), ["claude.cmd", "claude.exe", "claude"]);
+    assert.deepEqual(cliSpawnInvocation("claude.cmd", ["auth", "status", "--json"], "win32"), {
+      command: "cmd",
+      args: ["/c", "claude.cmd", "auth", "status", "--json"]
+    });
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL2NsYXVkZS1yZWFkaW5lc3MtcmVncmVzc2lvbi00OTk3LnRlc3QudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImltcG9ydCB0ZXN0LCB7IGRlc2NyaWJlIH0gZnJvbSBcIm5vZGU6dGVzdFwiO1xuaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5pbXBvcnQge1xuXHRidWlsZENsYXVkZVNwYXduSW52b2NhdGlvbiBhcyBjbGlTcGF3bkludm9jYXRpb24sXG5cdGdldENsYXVkZUNvbW1hbmRDYW5kaWRhdGVzIGFzIGNsaUNhbmRpZGF0ZXMsXG5cdHBhcnNlQXV0aFN0YXR1cyBhcyBwYXJzZUNsaUF1dGhTdGF0dXMsXG59IGZyb20gXCIuLi9jbGF1ZGUtY2xpLWNoZWNrLnRzXCI7XG5pbXBvcnQge1xuXHRidWlsZENsYXVkZVNwYXduSW52b2NhdGlvbiBhcyByZWFkaW5lc3NTcGF3bkludm9jYXRpb24sXG5cdGdldENsYXVkZUNvbW1hbmRDYW5kaWRhdGVzIGFzIHJlYWRpbmVzc0NhbmRpZGF0ZXMsXG5cdHBhcnNlQXV0aFN0YXR1cyBhcyBwYXJzZVJlYWRpbmVzc0F1dGhTdGF0dXMsXG59IGZyb20gXCIuLi9yZXNvdXJjZXMvZXh0ZW5zaW9ucy9jbGF1ZGUtY29kZS1jbGkvcmVhZGluZXNzLnRzXCI7XG5cbmRlc2NyaWJlKFwiQ2xhdWRlIGF1dGggZGV0ZWN0aW9uIEpTT04gb3V0cHV0ICgjNDk5NylcIiwgKCkgPT4ge1xuXHR0ZXN0KFwicmVhZGluZXNzLnRzIHBhcnNlcyBsb2dnZWRJbiBKU09OXCIsICgpID0+IHtcblx0XHRhc3NlcnQuZXF1YWwocGFyc2VSZWFkaW5lc3NBdXRoU3RhdHVzKCd7XCJsb2dnZWRJblwiOnRydWV9JyksIHRydWUpO1xuXHRcdGFzc2VydC5lcXVhbChwYXJzZVJlYWRpbmVzc0F1dGhTdGF0dXMoJ3tcImxvZ2dlZEluXCI6ZmFsc2V9JyksIGZhbHNlKTtcblx0fSk7XG5cblx0dGVzdChcImNsYXVkZS1jbGktY2hlY2sudHMgcGFyc2VzIGxvZ2dlZEluIEpTT05cIiwgKCkgPT4ge1xuXHRcdGFzc2VydC5lcXVhbChwYXJzZUNsaUF1dGhTdGF0dXMoJ3tcImxvZ2dlZEluXCI6dHJ1ZX0nKSwgdHJ1ZSk7XG5cdFx0YXNzZXJ0LmVxdWFsKHBhcnNlQ2xpQXV0aFN0YXR1cygne1wibG9nZ2VkSW5cIjpmYWxzZX0nKSwgZmFsc2UpO1xuXHR9KTtcbn0pO1xuXG5kZXNjcmliZShcIkNsYXVkZSBhdXRoIGRldGVjdGlvbiB0ZXh0IGZhbGxiYWNrICgjNDk5NylcIiwgKCkgPT4ge1xuXHR0ZXN0KFwicmVhZGluZXNzLnRzIGZhbGxzIGJhY2sgdG8gcGxhaW4gYXV0aCBzdGF0dXMgdGV4dFwiLCAoKSA9PiB7XG5cdFx0YXNzZXJ0LmVxdWFsKHBhcnNlUmVhZGluZXNzQXV0aFN0YXR1cyhcIkF1dGhlbnRpY2F0ZWQgYXMgdXNlckBleGFtcGxlLmNvbVwiKSwgdHJ1ZSk7XG5cdFx0YXNzZXJ0LmVxdWFsKHBhcnNlUmVhZGluZXNzQXV0aFN0YXR1cyhcIk5vdCBsb2dnZWQgaW5cIiksIGZhbHNlKTtcblx0fSk7XG5cblx0dGVzdChcImNsYXVkZS1jbGktY2hlY2sudHMgZmFsbHMgYmFjayB0byBwbGFpbiBhdXRoIHN0YXR1cyB0ZXh0XCIsICgpID0+IHtcblx0XHRhc3NlcnQuZXF1YWwocGFyc2VDbGlBdXRoU3RhdHVzKFwic2lnbmVkIGluIHdpdGggc3Vic2NyaXB0aW9uXCIpLCB0cnVlKTtcblx0XHRhc3NlcnQuZXF1YWwocGFyc2VDbGlBdXRoU3RhdHVzKFwiTm8gY3JlZGVudGlhbHMgZm91bmRcIiksIGZhbHNlKTtcblx0fSk7XG59KTtcblxuZGVzY3JpYmUoXCJDbGF1ZGUgYXV0aCBkZXRlY3Rpb24gV2luZG93cyBjYW5kaWRhdGUgcGxhbm5pbmcgKCM0OTk3KVwiLCAoKSA9PiB7XG5cdHRlc3QoXCJyZWFkaW5lc3MudHMgcGxhbnMgYWxsIFdpbmRvd3MgY2FuZGlkYXRlcyBhbmQgY21kIC9jIHNwYXduXCIsICgpID0+IHtcblx0XHRhc3NlcnQuZGVlcEVxdWFsKHJlYWRpbmVzc0NhbmRpZGF0ZXMoXCJ3aW4zMlwiKSwgW1wiY2xhdWRlLmNtZFwiLCBcImNsYXVkZS5leGVcIiwgXCJjbGF1ZGVcIl0pO1xuXHRcdGFzc2VydC5kZWVwRXF1YWwocmVhZGluZXNzU3Bhd25JbnZvY2F0aW9uKFwiY2xhdWRlLmV4ZVwiLCBbXCJhdXRoXCIsIFwic3RhdHVzXCIsIFwiLS1qc29uXCJdLCBcIndpbjMyXCIpLCB7XG5cdFx0XHRjb21tYW5kOiBcImNtZFwiLFxuXHRcdFx0YXJnczogW1wiL2NcIiwgXCJjbGF1ZGUuZXhlXCIsIFwiYXV0aFwiLCBcInN0YXR1c1wiLCBcIi0tanNvblwiXSxcblx0XHR9KTtcblx0fSk7XG5cblx0dGVzdChcImNsYXVkZS1jbGktY2hlY2sudHMgcGxhbnMgYWxsIFdpbmRvd3MgY2FuZGlkYXRlcyBhbmQgY21kIC9jIHNwYXduXCIsICgpID0+IHtcblx0XHRhc3NlcnQuZGVlcEVxdWFsKGNsaUNhbmRpZGF0ZXMoXCJ3aW4zMlwiKSwgW1wiY2xhdWRlLmNtZFwiLCBcImNsYXVkZS5leGVcIiwgXCJjbGF1ZGVcIl0pO1xuXHRcdGFzc2VydC5kZWVwRXF1YWwoY2xpU3Bhd25JbnZvY2F0aW9uKFwiY2xhdWRlLmNtZFwiLCBbXCJhdXRoXCIsIFwic3RhdHVzXCIsIFwiLS1qc29uXCJdLCBcIndpbjMyXCIpLCB7XG5cdFx0XHRjb21tYW5kOiBcImNtZFwiLFxuXHRcdFx0YXJnczogW1wiL2NcIiwgXCJjbGF1ZGUuY21kXCIsIFwiYXV0aFwiLCBcInN0YXR1c1wiLCBcIi0tanNvblwiXSxcblx0XHR9KTtcblx0fSk7XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sUUFBUSxnQkFBZ0I7QUFDL0IsT0FBTyxZQUFZO0FBQ25CO0FBQUEsRUFDQyw4QkFBOEI7QUFBQSxFQUM5Qiw4QkFBOEI7QUFBQSxFQUM5QixtQkFBbUI7QUFBQSxPQUNiO0FBQ1A7QUFBQSxFQUNDLDhCQUE4QjtBQUFBLEVBQzlCLDhCQUE4QjtBQUFBLEVBQzlCLG1CQUFtQjtBQUFBLE9BQ2I7QUFFUCxTQUFTLDZDQUE2QyxNQUFNO0FBQzNELE9BQUsscUNBQXFDLE1BQU07QUFDL0MsV0FBTyxNQUFNLHlCQUF5QixtQkFBbUIsR0FBRyxJQUFJO0FBQ2hFLFdBQU8sTUFBTSx5QkFBeUIsb0JBQW9CLEdBQUcsS0FBSztBQUFBLEVBQ25FLENBQUM7QUFFRCxPQUFLLDRDQUE0QyxNQUFNO0FBQ3RELFdBQU8sTUFBTSxtQkFBbUIsbUJBQW1CLEdBQUcsSUFBSTtBQUMxRCxXQUFPLE1BQU0sbUJBQW1CLG9CQUFvQixHQUFHLEtBQUs7QUFBQSxFQUM3RCxDQUFDO0FBQ0YsQ0FBQztBQUVELFNBQVMsK0NBQStDLE1BQU07QUFDN0QsT0FBSyxxREFBcUQsTUFBTTtBQUMvRCxXQUFPLE1BQU0seUJBQXlCLG1DQUFtQyxHQUFHLElBQUk7QUFDaEYsV0FBTyxNQUFNLHlCQUF5QixlQUFlLEdBQUcsS0FBSztBQUFBLEVBQzlELENBQUM7QUFFRCxPQUFLLDREQUE0RCxNQUFNO0FBQ3RFLFdBQU8sTUFBTSxtQkFBbUIsNkJBQTZCLEdBQUcsSUFBSTtBQUNwRSxXQUFPLE1BQU0sbUJBQW1CLHNCQUFzQixHQUFHLEtBQUs7QUFBQSxFQUMvRCxDQUFDO0FBQ0YsQ0FBQztBQUVELFNBQVMsNERBQTRELE1BQU07QUFDMUUsT0FBSyw4REFBOEQsTUFBTTtBQUN4RSxXQUFPLFVBQVUsb0JBQW9CLE9BQU8sR0FBRyxDQUFDLGNBQWMsY0FBYyxRQUFRLENBQUM7QUFDckYsV0FBTyxVQUFVLHlCQUF5QixjQUFjLENBQUMsUUFBUSxVQUFVLFFBQVEsR0FBRyxPQUFPLEdBQUc7QUFBQSxNQUMvRixTQUFTO0FBQUEsTUFDVCxNQUFNLENBQUMsTUFBTSxjQUFjLFFBQVEsVUFBVSxRQUFRO0FBQUEsSUFDdEQsQ0FBQztBQUFBLEVBQ0YsQ0FBQztBQUVELE9BQUsscUVBQXFFLE1BQU07QUFDL0UsV0FBTyxVQUFVLGNBQWMsT0FBTyxHQUFHLENBQUMsY0FBYyxjQUFjLFFBQVEsQ0FBQztBQUMvRSxXQUFPLFVBQVUsbUJBQW1CLGNBQWMsQ0FBQyxRQUFRLFVBQVUsUUFBUSxHQUFHLE9BQU8sR0FBRztBQUFBLE1BQ3pGLFNBQVM7QUFBQSxNQUNULE1BQU0sQ0FBQyxNQUFNLGNBQWMsUUFBUSxVQUFVLFFBQVE7QUFBQSxJQUN0RCxDQUFDO0FBQUEsRUFDRixDQUFDO0FBQ0YsQ0FBQzsiLAogICJuYW1lcyI6IFtdCn0K

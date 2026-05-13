@@ -1,0 +1,24 @@
+class UndoStack {
+  constructor() {
+    this.stack = [];
+  }
+  /** Push a deep clone of the given state onto the stack. */
+  push(state) {
+    this.stack.push(structuredClone(state));
+  }
+  /** Pop and return the most recent snapshot, or undefined if empty. */
+  pop() {
+    return this.stack.pop();
+  }
+  /** Remove all snapshots. */
+  clear() {
+    this.stack.length = 0;
+  }
+  get length() {
+    return this.stack.length;
+  }
+}
+export {
+  UndoStack
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vcGFja2FnZXMvcGktdHVpL3NyYy91bmRvLXN0YWNrLnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyIvKipcbiAqIEdlbmVyaWMgdW5kbyBzdGFjayB3aXRoIGNsb25lLW9uLXB1c2ggc2VtYW50aWNzLlxuICpcbiAqIFN0b3JlcyBkZWVwIGNsb25lcyBvZiBzdGF0ZSBzbmFwc2hvdHMuIFBvcHBlZCBzbmFwc2hvdHMgYXJlIHJldHVybmVkXG4gKiBkaXJlY3RseSAobm8gcmUtY2xvbmluZykgc2luY2UgdGhleSBhcmUgYWxyZWFkeSBkZXRhY2hlZC5cbiAqL1xuZXhwb3J0IGNsYXNzIFVuZG9TdGFjazxTPiB7XG5cdHByaXZhdGUgc3RhY2s6IFNbXSA9IFtdO1xuXG5cdC8qKiBQdXNoIGEgZGVlcCBjbG9uZSBvZiB0aGUgZ2l2ZW4gc3RhdGUgb250byB0aGUgc3RhY2suICovXG5cdHB1c2goc3RhdGU6IFMpOiB2b2lkIHtcblx0XHR0aGlzLnN0YWNrLnB1c2goc3RydWN0dXJlZENsb25lKHN0YXRlKSk7XG5cdH1cblxuXHQvKiogUG9wIGFuZCByZXR1cm4gdGhlIG1vc3QgcmVjZW50IHNuYXBzaG90LCBvciB1bmRlZmluZWQgaWYgZW1wdHkuICovXG5cdHBvcCgpOiBTIHwgdW5kZWZpbmVkIHtcblx0XHRyZXR1cm4gdGhpcy5zdGFjay5wb3AoKTtcblx0fVxuXG5cdC8qKiBSZW1vdmUgYWxsIHNuYXBzaG90cy4gKi9cblx0Y2xlYXIoKTogdm9pZCB7XG5cdFx0dGhpcy5zdGFjay5sZW5ndGggPSAwO1xuXHR9XG5cblx0Z2V0IGxlbmd0aCgpOiBudW1iZXIge1xuXHRcdHJldHVybiB0aGlzLnN0YWNrLmxlbmd0aDtcblx0fVxufVxuIl0sCiAgIm1hcHBpbmdzIjogIkFBTU8sTUFBTSxVQUFhO0FBQUEsRUFBbkI7QUFDTixTQUFRLFFBQWEsQ0FBQztBQUFBO0FBQUE7QUFBQSxFQUd0QixLQUFLLE9BQWdCO0FBQ3BCLFNBQUssTUFBTSxLQUFLLGdCQUFnQixLQUFLLENBQUM7QUFBQSxFQUN2QztBQUFBO0FBQUEsRUFHQSxNQUFxQjtBQUNwQixXQUFPLEtBQUssTUFBTSxJQUFJO0FBQUEsRUFDdkI7QUFBQTtBQUFBLEVBR0EsUUFBYztBQUNiLFNBQUssTUFBTSxTQUFTO0FBQUEsRUFDckI7QUFBQSxFQUVBLElBQUksU0FBaUI7QUFDcEIsV0FBTyxLQUFLLE1BQU07QUFBQSxFQUNuQjtBQUNEOyIsCiAgIm5hbWVzIjogW10KfQo=

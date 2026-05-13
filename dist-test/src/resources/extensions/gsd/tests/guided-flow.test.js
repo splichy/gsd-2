@@ -1,0 +1,19 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+test("guided milestone discussion callsites pass workingDirectory to loadPrompt", () => {
+  const source = readFileSync(join(__dirname, "..", "guided-flow.ts"), "utf-8");
+  const calls = [...source.matchAll(/loadPrompt\("guided-discuss-milestone",\s*\{([\s\S]*?)\}\)/g)];
+  assert.equal(calls.length, 6, "all guided-flow guided-discuss-milestone callsites should be covered");
+  for (const call of calls) {
+    assert.match(
+      call[1] ?? "",
+      /\bworkingDirectory:\s*basePath\b/,
+      "guided-discuss-milestone prompts need workingDirectory so template validation does not crash"
+    );
+  }
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9ndWlkZWQtZmxvdy50ZXN0LnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyJpbXBvcnQgdGVzdCBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcbmltcG9ydCB7IHJlYWRGaWxlU3luYyB9IGZyb20gXCJub2RlOmZzXCI7XG5pbXBvcnQgeyBkaXJuYW1lLCBqb2luIH0gZnJvbSBcIm5vZGU6cGF0aFwiO1xuaW1wb3J0IHsgZmlsZVVSTFRvUGF0aCB9IGZyb20gXCJub2RlOnVybFwiO1xuXG5jb25zdCBfX2Rpcm5hbWUgPSBkaXJuYW1lKGZpbGVVUkxUb1BhdGgoaW1wb3J0Lm1ldGEudXJsKSk7XG5cbnRlc3QoXCJndWlkZWQgbWlsZXN0b25lIGRpc2N1c3Npb24gY2FsbHNpdGVzIHBhc3Mgd29ya2luZ0RpcmVjdG9yeSB0byBsb2FkUHJvbXB0XCIsICgpID0+IHtcbiAgY29uc3Qgc291cmNlID0gcmVhZEZpbGVTeW5jKGpvaW4oX19kaXJuYW1lLCBcIi4uXCIsIFwiZ3VpZGVkLWZsb3cudHNcIiksIFwidXRmLThcIik7XG4gIGNvbnN0IGNhbGxzID0gWy4uLnNvdXJjZS5tYXRjaEFsbCgvbG9hZFByb21wdFxcKFwiZ3VpZGVkLWRpc2N1c3MtbWlsZXN0b25lXCIsXFxzKlxceyhbXFxzXFxTXSo/KVxcfVxcKS9nKV07XG5cbiAgYXNzZXJ0LmVxdWFsKGNhbGxzLmxlbmd0aCwgNiwgXCJhbGwgZ3VpZGVkLWZsb3cgZ3VpZGVkLWRpc2N1c3MtbWlsZXN0b25lIGNhbGxzaXRlcyBzaG91bGQgYmUgY292ZXJlZFwiKTtcbiAgZm9yIChjb25zdCBjYWxsIG9mIGNhbGxzKSB7XG4gICAgYXNzZXJ0Lm1hdGNoKFxuICAgICAgY2FsbFsxXSA/PyBcIlwiLFxuICAgICAgL1xcYndvcmtpbmdEaXJlY3Rvcnk6XFxzKmJhc2VQYXRoXFxiLyxcbiAgICAgIFwiZ3VpZGVkLWRpc2N1c3MtbWlsZXN0b25lIHByb21wdHMgbmVlZCB3b3JraW5nRGlyZWN0b3J5IHNvIHRlbXBsYXRlIHZhbGlkYXRpb24gZG9lcyBub3QgY3Jhc2hcIixcbiAgICApO1xuICB9XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUFBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFDbkIsU0FBUyxvQkFBb0I7QUFDN0IsU0FBUyxTQUFTLFlBQVk7QUFDOUIsU0FBUyxxQkFBcUI7QUFFOUIsTUFBTSxZQUFZLFFBQVEsY0FBYyxZQUFZLEdBQUcsQ0FBQztBQUV4RCxLQUFLLDZFQUE2RSxNQUFNO0FBQ3RGLFFBQU0sU0FBUyxhQUFhLEtBQUssV0FBVyxNQUFNLGdCQUFnQixHQUFHLE9BQU87QUFDNUUsUUFBTSxRQUFRLENBQUMsR0FBRyxPQUFPLFNBQVMsNkRBQTZELENBQUM7QUFFaEcsU0FBTyxNQUFNLE1BQU0sUUFBUSxHQUFHLHNFQUFzRTtBQUNwRyxhQUFXLFFBQVEsT0FBTztBQUN4QixXQUFPO0FBQUEsTUFDTCxLQUFLLENBQUMsS0FBSztBQUFBLE1BQ1g7QUFBQSxNQUNBO0FBQUEsSUFDRjtBQUFBLEVBQ0Y7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

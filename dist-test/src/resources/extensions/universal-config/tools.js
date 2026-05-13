@@ -1,0 +1,55 @@
+const TOOLS = [
+  {
+    id: "claude",
+    name: "Claude Code",
+    userDir: ".claude",
+    projectDir: ".claude"
+  },
+  {
+    id: "cursor",
+    name: "Cursor",
+    userDir: ".cursor",
+    projectDir: ".cursor"
+  },
+  {
+    id: "windsurf",
+    name: "Windsurf",
+    userDir: ".codeium/windsurf",
+    projectDir: ".windsurf"
+  },
+  {
+    id: "gemini",
+    name: "Gemini CLI",
+    userDir: ".gemini",
+    projectDir: ".gemini"
+  },
+  {
+    id: "codex",
+    name: "OpenAI Codex",
+    userDir: ".codex",
+    projectDir: ".codex"
+  },
+  {
+    id: "cline",
+    name: "Cline",
+    userDir: null,
+    projectDir: null
+    // Uses root-level .clinerules (handled specially)
+  },
+  {
+    id: "github-copilot",
+    name: "GitHub Copilot",
+    userDir: null,
+    projectDir: ".github"
+  },
+  {
+    id: "vscode",
+    name: "VS Code",
+    userDir: null,
+    projectDir: ".vscode"
+  }
+];
+export {
+  TOOLS
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL3VuaXZlcnNhbC1jb25maWcvdG9vbHMudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbIi8qKlxuICogVW5pdmVyc2FsIENvbmZpZyBEaXNjb3ZlcnkgXHUyMDE0IHRvb2wgcmVnaXN0cnlcbiAqXG4gKiBLbm93biBBSSBjb2RpbmcgdG9vbHMgd2l0aCB0aGVpciBjb25maWcgZGlyZWN0b3J5IGxvY2F0aW9ucy5cbiAqIEJhc2VkIG9uIHJlc2VhcmNoIG9mIE9oIE15IFBpJ3MgZGlzY292ZXJ5IHN5c3RlbSBhbmQgZGlyZWN0IGNvbmZpZ1xuICogZmlsZSBpbnNwZWN0aW9uIG9mIGVhY2ggdG9vbC5cbiAqL1xuXG5pbXBvcnQgdHlwZSB7IFRvb2xJbmZvIH0gZnJvbSBcIi4vdHlwZXMuanNcIjtcblxuZXhwb3J0IGNvbnN0IFRPT0xTOiBUb29sSW5mb1tdID0gW1xuICB7XG4gICAgaWQ6IFwiY2xhdWRlXCIsXG4gICAgbmFtZTogXCJDbGF1ZGUgQ29kZVwiLFxuICAgIHVzZXJEaXI6IFwiLmNsYXVkZVwiLFxuICAgIHByb2plY3REaXI6IFwiLmNsYXVkZVwiLFxuICB9LFxuICB7XG4gICAgaWQ6IFwiY3Vyc29yXCIsXG4gICAgbmFtZTogXCJDdXJzb3JcIixcbiAgICB1c2VyRGlyOiBcIi5jdXJzb3JcIixcbiAgICBwcm9qZWN0RGlyOiBcIi5jdXJzb3JcIixcbiAgfSxcbiAge1xuICAgIGlkOiBcIndpbmRzdXJmXCIsXG4gICAgbmFtZTogXCJXaW5kc3VyZlwiLFxuICAgIHVzZXJEaXI6IFwiLmNvZGVpdW0vd2luZHN1cmZcIixcbiAgICBwcm9qZWN0RGlyOiBcIi53aW5kc3VyZlwiLFxuICB9LFxuICB7XG4gICAgaWQ6IFwiZ2VtaW5pXCIsXG4gICAgbmFtZTogXCJHZW1pbmkgQ0xJXCIsXG4gICAgdXNlckRpcjogXCIuZ2VtaW5pXCIsXG4gICAgcHJvamVjdERpcjogXCIuZ2VtaW5pXCIsXG4gIH0sXG4gIHtcbiAgICBpZDogXCJjb2RleFwiLFxuICAgIG5hbWU6IFwiT3BlbkFJIENvZGV4XCIsXG4gICAgdXNlckRpcjogXCIuY29kZXhcIixcbiAgICBwcm9qZWN0RGlyOiBcIi5jb2RleFwiLFxuICB9LFxuICB7XG4gICAgaWQ6IFwiY2xpbmVcIixcbiAgICBuYW1lOiBcIkNsaW5lXCIsXG4gICAgdXNlckRpcjogbnVsbCxcbiAgICBwcm9qZWN0RGlyOiBudWxsLCAvLyBVc2VzIHJvb3QtbGV2ZWwgLmNsaW5lcnVsZXMgKGhhbmRsZWQgc3BlY2lhbGx5KVxuICB9LFxuICB7XG4gICAgaWQ6IFwiZ2l0aHViLWNvcGlsb3RcIixcbiAgICBuYW1lOiBcIkdpdEh1YiBDb3BpbG90XCIsXG4gICAgdXNlckRpcjogbnVsbCxcbiAgICBwcm9qZWN0RGlyOiBcIi5naXRodWJcIixcbiAgfSxcbiAge1xuICAgIGlkOiBcInZzY29kZVwiLFxuICAgIG5hbWU6IFwiVlMgQ29kZVwiLFxuICAgIHVzZXJEaXI6IG51bGwsXG4gICAgcHJvamVjdERpcjogXCIudnNjb2RlXCIsXG4gIH0sXG5dO1xuIl0sCiAgIm1hcHBpbmdzIjogIkFBVU8sTUFBTSxRQUFvQjtBQUFBLEVBQy9CO0FBQUEsSUFDRSxJQUFJO0FBQUEsSUFDSixNQUFNO0FBQUEsSUFDTixTQUFTO0FBQUEsSUFDVCxZQUFZO0FBQUEsRUFDZDtBQUFBLEVBQ0E7QUFBQSxJQUNFLElBQUk7QUFBQSxJQUNKLE1BQU07QUFBQSxJQUNOLFNBQVM7QUFBQSxJQUNULFlBQVk7QUFBQSxFQUNkO0FBQUEsRUFDQTtBQUFBLElBQ0UsSUFBSTtBQUFBLElBQ0osTUFBTTtBQUFBLElBQ04sU0FBUztBQUFBLElBQ1QsWUFBWTtBQUFBLEVBQ2Q7QUFBQSxFQUNBO0FBQUEsSUFDRSxJQUFJO0FBQUEsSUFDSixNQUFNO0FBQUEsSUFDTixTQUFTO0FBQUEsSUFDVCxZQUFZO0FBQUEsRUFDZDtBQUFBLEVBQ0E7QUFBQSxJQUNFLElBQUk7QUFBQSxJQUNKLE1BQU07QUFBQSxJQUNOLFNBQVM7QUFBQSxJQUNULFlBQVk7QUFBQSxFQUNkO0FBQUEsRUFDQTtBQUFBLElBQ0UsSUFBSTtBQUFBLElBQ0osTUFBTTtBQUFBLElBQ04sU0FBUztBQUFBLElBQ1QsWUFBWTtBQUFBO0FBQUEsRUFDZDtBQUFBLEVBQ0E7QUFBQSxJQUNFLElBQUk7QUFBQSxJQUNKLE1BQU07QUFBQSxJQUNOLFNBQVM7QUFBQSxJQUNULFlBQVk7QUFBQSxFQUNkO0FBQUEsRUFDQTtBQUFBLElBQ0UsSUFBSTtBQUFBLElBQ0osTUFBTTtBQUFBLElBQ04sU0FBUztBQUFBLElBQ1QsWUFBWTtBQUFBLEVBQ2Q7QUFDRjsiLAogICJuYW1lcyI6IFtdCn0K

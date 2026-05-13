@@ -1,0 +1,30 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { crossReferenceEvidence } from "../safety/evidence-cross-ref.js";
+test("claims of passing verification become errors when recorded bash evidence failed", () => {
+  const mismatches = crossReferenceEvidence(
+    [{ command: "npm test", exitCode: 0, verdict: "passed" }],
+    [
+      {
+        kind: "bash",
+        toolCallId: "call-1",
+        command: "npm test",
+        exitCode: 1,
+        outputSnippet: "failed",
+        timestamp: Date.now()
+      }
+    ]
+  );
+  assert.equal(mismatches.length, 1);
+  assert.equal(mismatches[0].severity, "error");
+  assert.match(mismatches[0].reason, /Claimed exitCode=0/);
+});
+test("missing recorded bash evidence remains a warning", () => {
+  const mismatches = crossReferenceEvidence(
+    [{ command: "npm test", exitCode: 0, verdict: "passed" }],
+    []
+  );
+  assert.equal(mismatches.length, 1);
+  assert.equal(mismatches[0].severity, "warning");
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL3Jlc291cmNlcy9leHRlbnNpb25zL2dzZC90ZXN0cy9ldmlkZW5jZS1jcm9zcy1yZWYudGVzdC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiLy8gUHJvamVjdC9BcHA6IEdTRC0yXG4vLyBGaWxlIFB1cnBvc2U6IFRlc3RzIGZvciB2ZXJpZmljYXRpb24gZXZpZGVuY2UgY3Jvc3MtcmVmZXJlbmNlIG1pc21hdGNoIHBvbGljeS5cblxuaW1wb3J0IHRlc3QgZnJvbSBcIm5vZGU6dGVzdFwiO1xuaW1wb3J0IGFzc2VydCBmcm9tIFwibm9kZTphc3NlcnQvc3RyaWN0XCI7XG5cbmltcG9ydCB7IGNyb3NzUmVmZXJlbmNlRXZpZGVuY2UgfSBmcm9tIFwiLi4vc2FmZXR5L2V2aWRlbmNlLWNyb3NzLXJlZi50c1wiO1xuaW1wb3J0IHR5cGUgeyBFdmlkZW5jZUVudHJ5IH0gZnJvbSBcIi4uL3NhZmV0eS9ldmlkZW5jZS1jb2xsZWN0b3IudHNcIjtcblxudGVzdChcImNsYWltcyBvZiBwYXNzaW5nIHZlcmlmaWNhdGlvbiBiZWNvbWUgZXJyb3JzIHdoZW4gcmVjb3JkZWQgYmFzaCBldmlkZW5jZSBmYWlsZWRcIiwgKCkgPT4ge1xuICBjb25zdCBtaXNtYXRjaGVzID0gY3Jvc3NSZWZlcmVuY2VFdmlkZW5jZShcbiAgICBbeyBjb21tYW5kOiBcIm5wbSB0ZXN0XCIsIGV4aXRDb2RlOiAwLCB2ZXJkaWN0OiBcInBhc3NlZFwiIH1dLFxuICAgIFtcbiAgICAgIHtcbiAgICAgICAga2luZDogXCJiYXNoXCIsXG4gICAgICAgIHRvb2xDYWxsSWQ6IFwiY2FsbC0xXCIsXG4gICAgICAgIGNvbW1hbmQ6IFwibnBtIHRlc3RcIixcbiAgICAgICAgZXhpdENvZGU6IDEsXG4gICAgICAgIG91dHB1dFNuaXBwZXQ6IFwiZmFpbGVkXCIsXG4gICAgICAgIHRpbWVzdGFtcDogRGF0ZS5ub3coKSxcbiAgICAgIH0sXG4gICAgXSBhcyBFdmlkZW5jZUVudHJ5W10sXG4gICk7XG5cbiAgYXNzZXJ0LmVxdWFsKG1pc21hdGNoZXMubGVuZ3RoLCAxKTtcbiAgYXNzZXJ0LmVxdWFsKG1pc21hdGNoZXNbMF0uc2V2ZXJpdHksIFwiZXJyb3JcIik7XG4gIGFzc2VydC5tYXRjaChtaXNtYXRjaGVzWzBdLnJlYXNvbiwgL0NsYWltZWQgZXhpdENvZGU9MC8pO1xufSk7XG5cbnRlc3QoXCJtaXNzaW5nIHJlY29yZGVkIGJhc2ggZXZpZGVuY2UgcmVtYWlucyBhIHdhcm5pbmdcIiwgKCkgPT4ge1xuICBjb25zdCBtaXNtYXRjaGVzID0gY3Jvc3NSZWZlcmVuY2VFdmlkZW5jZShcbiAgICBbeyBjb21tYW5kOiBcIm5wbSB0ZXN0XCIsIGV4aXRDb2RlOiAwLCB2ZXJkaWN0OiBcInBhc3NlZFwiIH1dLFxuICAgIFtdLFxuICApO1xuXG4gIGFzc2VydC5lcXVhbChtaXNtYXRjaGVzLmxlbmd0aCwgMSk7XG4gIGFzc2VydC5lcXVhbChtaXNtYXRjaGVzWzBdLnNldmVyaXR5LCBcIndhcm5pbmdcIik7XG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICJBQUdBLE9BQU8sVUFBVTtBQUNqQixPQUFPLFlBQVk7QUFFbkIsU0FBUyw4QkFBOEI7QUFHdkMsS0FBSyxtRkFBbUYsTUFBTTtBQUM1RixRQUFNLGFBQWE7QUFBQSxJQUNqQixDQUFDLEVBQUUsU0FBUyxZQUFZLFVBQVUsR0FBRyxTQUFTLFNBQVMsQ0FBQztBQUFBLElBQ3hEO0FBQUEsTUFDRTtBQUFBLFFBQ0UsTUFBTTtBQUFBLFFBQ04sWUFBWTtBQUFBLFFBQ1osU0FBUztBQUFBLFFBQ1QsVUFBVTtBQUFBLFFBQ1YsZUFBZTtBQUFBLFFBQ2YsV0FBVyxLQUFLLElBQUk7QUFBQSxNQUN0QjtBQUFBLElBQ0Y7QUFBQSxFQUNGO0FBRUEsU0FBTyxNQUFNLFdBQVcsUUFBUSxDQUFDO0FBQ2pDLFNBQU8sTUFBTSxXQUFXLENBQUMsRUFBRSxVQUFVLE9BQU87QUFDNUMsU0FBTyxNQUFNLFdBQVcsQ0FBQyxFQUFFLFFBQVEsb0JBQW9CO0FBQ3pELENBQUM7QUFFRCxLQUFLLG9EQUFvRCxNQUFNO0FBQzdELFFBQU0sYUFBYTtBQUFBLElBQ2pCLENBQUMsRUFBRSxTQUFTLFlBQVksVUFBVSxHQUFHLFNBQVMsU0FBUyxDQUFDO0FBQUEsSUFDeEQsQ0FBQztBQUFBLEVBQ0g7QUFFQSxTQUFPLE1BQU0sV0FBVyxRQUFRLENBQUM7QUFDakMsU0FBTyxNQUFNLFdBQVcsQ0FBQyxFQUFFLFVBQVUsU0FBUztBQUNoRCxDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

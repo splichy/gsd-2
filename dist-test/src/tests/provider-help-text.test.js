@@ -1,0 +1,23 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+const { printSubcommandHelp } = await import("../../dist/help-text.js");
+describe("help-text provider references", () => {
+  it("config help mentions OpenRouter and Ollama", () => {
+    const lines = [];
+    const origWrite = process.stdout.write.bind(process.stdout);
+    process.stdout.write = (chunk) => {
+      lines.push(chunk);
+      return true;
+    };
+    try {
+      printSubcommandHelp("config", "0.0.0");
+    } finally {
+      process.stdout.write = origWrite;
+    }
+    const text = lines.join("");
+    assert.ok(text.includes("OpenRouter"), "OpenRouter should be mentioned in config help");
+    assert.ok(text.includes("Ollama"), "Ollama should be mentioned in config help");
+    assert.ok(text.includes("docs/providers.md"), "providers.md reference should be in config help");
+  });
+});
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiLi4vLi4vLi4vc3JjL3Rlc3RzL3Byb3ZpZGVyLWhlbHAtdGV4dC50ZXN0LnRzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyJpbXBvcnQgeyBkZXNjcmliZSwgaXQgfSBmcm9tIFwibm9kZTp0ZXN0XCI7XG5pbXBvcnQgYXNzZXJ0IGZyb20gXCJub2RlOmFzc2VydC9zdHJpY3RcIjtcblxuLy8gVmFsaWRhdGUgdGhhdCBoZWxwLXRleHQudHMgaW5jbHVkZXMgdXBkYXRlZCBwcm92aWRlciByZWZlcmVuY2VzXG5jb25zdCB7IHByaW50U3ViY29tbWFuZEhlbHAgfSA9IGF3YWl0IGltcG9ydChcIi4uLy4uL2Rpc3QvaGVscC10ZXh0LmpzXCIpO1xuXG5kZXNjcmliZShcImhlbHAtdGV4dCBwcm92aWRlciByZWZlcmVuY2VzXCIsICgpID0+IHtcbiAgaXQoXCJjb25maWcgaGVscCBtZW50aW9ucyBPcGVuUm91dGVyIGFuZCBPbGxhbWFcIiwgKCkgPT4ge1xuICAgIGNvbnN0IGxpbmVzOiBzdHJpbmdbXSA9IFtdO1xuICAgIGNvbnN0IG9yaWdXcml0ZSA9IHByb2Nlc3Muc3Rkb3V0LndyaXRlLmJpbmQocHJvY2Vzcy5zdGRvdXQpO1xuICAgIChwcm9jZXNzLnN0ZG91dCBhcyBhbnkpLndyaXRlID0gKGNodW5rOiBzdHJpbmcpID0+IHsgbGluZXMucHVzaChjaHVuayk7IHJldHVybiB0cnVlOyB9O1xuICAgIHRyeSB7XG4gICAgICBwcmludFN1YmNvbW1hbmRIZWxwKFwiY29uZmlnXCIsIFwiMC4wLjBcIik7XG4gICAgfSBmaW5hbGx5IHtcbiAgICAgIChwcm9jZXNzLnN0ZG91dCBhcyBhbnkpLndyaXRlID0gb3JpZ1dyaXRlO1xuICAgIH1cbiAgICBjb25zdCB0ZXh0ID0gbGluZXMuam9pbihcIlwiKTtcbiAgICBhc3NlcnQub2sodGV4dC5pbmNsdWRlcyhcIk9wZW5Sb3V0ZXJcIiksIFwiT3BlblJvdXRlciBzaG91bGQgYmUgbWVudGlvbmVkIGluIGNvbmZpZyBoZWxwXCIpO1xuICAgIGFzc2VydC5vayh0ZXh0LmluY2x1ZGVzKFwiT2xsYW1hXCIpLCBcIk9sbGFtYSBzaG91bGQgYmUgbWVudGlvbmVkIGluIGNvbmZpZyBoZWxwXCIpO1xuICAgIGFzc2VydC5vayh0ZXh0LmluY2x1ZGVzKFwiZG9jcy9wcm92aWRlcnMubWRcIiksIFwicHJvdmlkZXJzLm1kIHJlZmVyZW5jZSBzaG91bGQgYmUgaW4gY29uZmlnIGhlbHBcIik7XG4gIH0pO1xufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxTQUFTLFVBQVUsVUFBVTtBQUM3QixPQUFPLFlBQVk7QUFHbkIsTUFBTSxFQUFFLG9CQUFvQixJQUFJLE1BQU0sT0FBTyx5QkFBeUI7QUFFdEUsU0FBUyxpQ0FBaUMsTUFBTTtBQUM5QyxLQUFHLDhDQUE4QyxNQUFNO0FBQ3JELFVBQU0sUUFBa0IsQ0FBQztBQUN6QixVQUFNLFlBQVksUUFBUSxPQUFPLE1BQU0sS0FBSyxRQUFRLE1BQU07QUFDMUQsSUFBQyxRQUFRLE9BQWUsUUFBUSxDQUFDLFVBQWtCO0FBQUUsWUFBTSxLQUFLLEtBQUs7QUFBRyxhQUFPO0FBQUEsSUFBTTtBQUNyRixRQUFJO0FBQ0YsMEJBQW9CLFVBQVUsT0FBTztBQUFBLElBQ3ZDLFVBQUU7QUFDQSxNQUFDLFFBQVEsT0FBZSxRQUFRO0FBQUEsSUFDbEM7QUFDQSxVQUFNLE9BQU8sTUFBTSxLQUFLLEVBQUU7QUFDMUIsV0FBTyxHQUFHLEtBQUssU0FBUyxZQUFZLEdBQUcsK0NBQStDO0FBQ3RGLFdBQU8sR0FBRyxLQUFLLFNBQVMsUUFBUSxHQUFHLDJDQUEyQztBQUM5RSxXQUFPLEdBQUcsS0FBSyxTQUFTLG1CQUFtQixHQUFHLGlEQUFpRDtBQUFBLEVBQ2pHLENBQUM7QUFDSCxDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=
