@@ -182,3 +182,106 @@ describe("computeMcpDisallowedTools", () => {
     assert.deepEqual(result.sort(), ["mcp__my-server__*", "mcp__other-server__*"]);
   });
 });
+
+// ─── Integration: empirical tool-count reduction ───────────────────────────
+
+describe("integration: empirical tool-count reduction", () => {
+  it("disallowedTools count equals discovered minus allowed (5 servers, 1 allowed → 4 blocked)", () => {
+    const dir = mkdtempSync(join(tmpdir(), "mcp-filter-integration-"));
+    writeFileSync(
+      join(dir, ".mcp.json"),
+      JSON.stringify({
+        mcpServers: {
+          "server-alpha": {},
+          "server-beta": {},
+          "server-gamma": {},
+          "server-delta": {},
+          "server-epsilon": {},
+        },
+      }),
+    );
+
+    const discovered = discoverMcpServerNames(dir);
+    assert.equal(discovered.length, 5, "fixture must have 5 servers");
+
+    const config: ClaudeCodeMcpConfig = {
+      per_model: {
+        "test-model": { allowed_servers: ["server-alpha"] },
+      },
+    };
+
+    const disallowedTools = computeMcpDisallowedTools(
+      "test-model",
+      config,
+      discovered,
+      "gsd-workflow",
+    );
+
+    // 5 discovered - 1 allowed = 4 blocked
+    assert.equal(disallowedTools.length, 4, "4 servers must be blocked");
+
+    // The allowed server must NOT be in disallowedTools
+    assert.ok(
+      !disallowedTools.includes("mcp__server-alpha__*"),
+      "server-alpha (allowed) must not be blocked",
+    );
+
+    // Each blocked server must produce the correct pattern
+    assert.deepEqual(disallowedTools.sort(), [
+      "mcp__server-beta__*",
+      "mcp__server-delta__*",
+      "mcp__server-epsilon__*",
+      "mcp__server-gamma__*",
+    ]);
+  });
+
+  it("negative: empty .mcp.json → disallowedTools empty", () => {
+    const dir = mkdtempSync(join(tmpdir(), "mcp-filter-integration-empty-"));
+    writeFileSync(join(dir, ".mcp.json"), JSON.stringify({}));
+
+    const discovered = discoverMcpServerNames(dir);
+    const config: ClaudeCodeMcpConfig = {
+      per_model: {
+        "test-model": { allowed_servers: ["server-alpha"] },
+      },
+    };
+
+    const disallowedTools = computeMcpDisallowedTools(
+      "test-model",
+      config,
+      discovered,
+      "gsd-workflow",
+    );
+
+    assert.deepEqual(disallowedTools, [], "no servers discovered → nothing to block");
+  });
+
+  it("negative: model ID matches no per_model key → disallowedTools empty", () => {
+    const dir = mkdtempSync(join(tmpdir(), "mcp-filter-integration-nomatch-"));
+    writeFileSync(
+      join(dir, ".mcp.json"),
+      JSON.stringify({
+        mcpServers: { "server-a": {}, "server-b": {}, "server-c": {} },
+      }),
+    );
+
+    const discovered = discoverMcpServerNames(dir);
+    assert.equal(discovered.length, 3);
+
+    const config: ClaudeCodeMcpConfig = {
+      per_model: {
+        "claude-haiku": { allowed_servers: ["server-a"] },
+      },
+    };
+
+    // "gpt-4o" doesn't match "claude-haiku" prefix → no filtering
+    const disallowedTools = computeMcpDisallowedTools(
+      "gpt-4o",
+      config,
+      discovered,
+      "gsd-workflow",
+    );
+
+    assert.deepEqual(disallowedTools, [], "unmatched model must produce no blocks");
+  });
+});
