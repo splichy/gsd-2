@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "hash": "ed170575b3717d3a23ea73c962b6b411516b50b61b7efbb261231a5159664e12",
-  "fileCount": 4577,
-  "bytes": 39179242,
-  "generatedAt": "2026-05-13T13:13:02.271Z",
+  "hash": "7c811c5e0805b5444e3443defdb020478a47155b68c7d39b5788db57232bbbf8",
+  "fileCount": 6464,
+  "bytes": 67346126,
+  "generatedAt": "2026-05-14T19:33:36.190Z",
   "metrics": {
     "cacheHit": false,
-    "fileCount": 4577,
-    "bytesCopied": 39179242,
-    "inputBytes": 39179242,
-    "wallMs": 2585
+    "fileCount": 6464,
+    "bytesCopied": 67346126,
+    "inputBytes": 67346126,
+    "wallMs": 3272
   }
 }

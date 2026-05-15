@@ -983,6 +983,39 @@ describe("stream-adapter — session persistence (#2859)", () => {
 		}
 	});
 
+	test("buildSdkOptions does not inject workflow MCP when already declared in project .mcp.json (avoids duplicate registration)", () => {
+		const restore = setWorkflowMcpEnv({
+			GSD_WORKFLOW_MCP_COMMAND: "node",
+			GSD_WORKFLOW_MCP_NAME: "gsd-workflow",
+			GSD_WORKFLOW_MCP_ARGS: JSON.stringify(["packages/mcp-server/dist/cli.js"]),
+			GSD_WORKFLOW_MCP_ENV: JSON.stringify({ GSD_CLI_PATH: "/tmp/gsd" }),
+			GSD_WORKFLOW_MCP_CWD: "/tmp/project",
+		});
+		const originalCwd = process.cwd();
+		const projectDir = mkdtempSync(join(tmpdir(), "claude-mcp-dup-"));
+		try {
+			// Simulate a project that already has gsd-workflow in its .mcp.json
+			writeFileSync(
+				join(projectDir, ".mcp.json"),
+				JSON.stringify({ mcpServers: { "gsd-workflow": { command: "node", args: ["old-cli.js"] }, "other-mcp": { command: "npx", args: ["other"] } } }),
+			);
+			process.chdir(projectDir);
+			const options = buildSdkOptions("claude-sonnet-4-20250514", "test");
+			// Should NOT inject gsd-workflow via mcpServers (project already has it)
+			assert.equal(options.mcpServers, undefined, "mcpServers should be omitted when workflow already in .mcp.json");
+			// But allowedTools should still include the workflow pattern
+			const allowedTools = options.allowedTools as string[];
+			assert.ok(allowedTools.includes("mcp__gsd-workflow__*"), "allowedTools must include workflow pattern even when not injected");
+			// AskUserQuestion should be disallowed (workflow is available via project config)
+			const disallowedTools = options.disallowedTools as string[];
+			assert.ok(disallowedTools.includes("AskUserQuestion"), "AskUserQuestion should be suppressed when workflow is available");
+		} finally {
+			process.chdir(originalCwd);
+			rmSync(projectDir, { recursive: true, force: true });
+			restore();
+		}
+	});
+
 	test("buildSdkOptions preserves runtime callbacks such as onElicitation", () => {
 		const restore = setWorkflowMcpEnv({});
 		const onElicitation = async () => ({ action: "decline" as const });
