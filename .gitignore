@@ -55,6 +55,10 @@ docs/coherence-audit/
 # ── GSD project state (per-worktree, never committed) ──
 .gsd/
 
+# ── Local agent/skill caches (per-developer, never committed) ──
+.agents/
+skills-lock.json
+
 # ── Stale lock files (npm is canonical) ──
 pnpm-lock.yaml
 bun.lock
